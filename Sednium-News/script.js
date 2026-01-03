@@ -351,17 +351,36 @@ categoryButtons.forEach(btn => {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, setting initial state');
   const themeToggle = document.getElementById('themeToggle');
+  const headerLogo = document.querySelector('.header-logo');
+
+  function updateLogo(isDark) {
+    if (headerLogo) {
+      // Dark mode uses default white/light logo, Light mode uses dark/colored logo
+      headerLogo.src = isDark ? 'assets/logo.png' : 'assets/logolight.png';
+    }
+  }
+
   if (themeToggle) {
-    if (localStorage.getItem('theme') === 'dark-mode') {
+    // Check local storage for theme preference
+    const storedTheme = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = storedTheme === 'dark-mode' || (!storedTheme && systemDark);
+
+    if (isDark) {
       document.body.classList.add('dark-mode');
       themeToggle.checked = true;
     }
+    updateLogo(isDark);
+
     themeToggle.addEventListener('change', () => {
       document.body.classList.toggle('dark-mode');
-      if (document.body.classList.contains('dark-mode')) {
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      updateLogo(isDarkMode);
+
+      if (isDarkMode) {
         localStorage.setItem('theme', 'dark-mode');
       } else {
-        localStorage.removeItem('theme');
+        localStorage.setItem('theme', 'light-mode');
       }
     });
   }
