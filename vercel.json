@@ -16,6 +16,10 @@
             "dest": "/api/proxy.js"
         },
         {
+            "src": "/rss/(.*)",
+            "dest": "/api/rss.js?category=$1"
+        },
+        {
             "src": "/rss",
             "dest": "/api/rss.js"
         },

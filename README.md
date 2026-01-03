@@ -45,7 +45,19 @@ This project is optimized for **Vercel**.
 3.  **Done!** Vercel auto-configures:
     -   Frontend: `https://sednium-news.vercel.app`
     -   API: `https://sednium-news.vercel.app/api/proxy`
-    -   RSS Feed: `https://sednium-news.vercel.app/rss`
+    -   RSS Feed: `https://sednium-news.vercel.app/rss` (Top News)
+
+### 📡 Specific Feed Links
+Copy these exact links into Smart Launcher:
+
+| Category | URL |
+| :--- | :--- |
+| **Technology** | `https://sednium-news.vercel.app/rss/technology` |
+| **Sports** | `https://sednium-news.vercel.app/rss/sports` |
+| **Business** | `https://sednium-news.vercel.app/rss/business` |
+| **Entertainment** | `https://sednium-news.vercel.app/rss/entertainment` |
+| **Science** | `https://sednium-news.vercel.app/rss/science` |
+| **Health** | `https://sednium-news.vercel.app/rss/health` |
 
 ---
 
