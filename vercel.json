@@ -6,7 +6,7 @@
             "use": "@vercel/node"
         },
         {
-            "src": "N-News/**",
+            "src": "Sednium-News/**",
             "use": "@vercel/static"
         }
     ],
@@ -21,7 +21,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "/N-News/$1"
+            "dest": "/Sednium-News/$1"
         }
     ]
 }
