@@ -38,7 +38,27 @@ async function fetchNews(category = 'top') {
     }
 }
 
-function generateRss(articles, category = 'Headlines') {
+// Vercel Serverless Function Handler
+export default async function handler(req, res) {
+    // robust query param handling
+    const queryCategory = (req.query.category || 'top').toLowerCase();
+    const validCategories = ['top', 'technology', 'sports', 'business', 'entertainment', 'science', 'health', 'world', 'politics'];
+
+    // Default to 'top' only if invalid category is requested
+    const selectedCategory = validCategories.includes(queryCategory) ? queryCategory : 'top';
+
+    const articles = await fetchNews(selectedCategory);
+
+    // Capitalize for display
+    const displayCategory = selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
+    const rss = generateRss(articles, displayCategory);
+
+    res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
+    res.status(200).send(rss);
+}
+
+function generateRss(articles, categoryName) {
     const now = new Date().toUTCString();
 
     // Deduplicate by title
@@ -53,51 +73,48 @@ function generateRss(articles, category = 'Headlines') {
     const items = uniqueArticles.map(article => {
         const title = escapeXml(article.title || 'Untitled');
         const link = escapeXml(article.link || '');
-        const description = escapeXml(article.description || 'No description');
+        const description = escapeXml(article.description || article.content || 'No description available.');
         const pubDate = toRfc822Date(article.pubDate);
-        const source = escapeXml(article.source_id || 'Unknown');
-        const imageUrl = article.image_url || '';
+        const source = escapeXml(article.source_id || 'Sednium News');
+        const imageUrl = article.image_url;
 
-        const mediaContent = imageUrl
-            ? `<enclosure url="${escapeXml(imageUrl)}" type="image/jpeg" length="0"/>`
+        // Smart Launcher prefers <media:content> or <enclosure>
+        // We provide enclosure for max compatibility
+        const mediaTag = imageUrl
+            ? `<enclosure url="${escapeXml(imageUrl)}" type="image/jpeg" length="0" />`
             : '';
 
-        return `
-    <item>
+        return `    <item>
       <title>${title}</title>
       <link>${link}</link>
       <description>${description}</description>
+      <category>${categoryName}</category>
       <pubDate>${pubDate}</pubDate>
       <source url="${link}">${source}</source>
-      ${mediaContent}
-      <guid isPermaLink="true">${link}</guid>
+      ${mediaTag}
+      <guid isPermaLink="false">${article.article_id || link}</guid>
     </item>`;
-    }).join('');
+    }).join('\n');
 
     return `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" 
+     xmlns:atom="http://www.w3.org/2005/Atom" 
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
-    <title>Sednium News - ${category}</title>
+    <title>Sednium News - ${categoryName}</title>
     <link>${SITE_URL}</link>
-    <description>Latest news from Sednium News</description>
+    <description>Latest ${categoryName} news from Sednium.</description>
     <language>en</language>
     <lastBuildDate>${now}</lastBuildDate>
-    <atom:link href="${SITE_URL}/rss" rel="self" type="application/rss+xml"/>
+    <generator>Sednium RSS Generator</generator>
+    <image>
+        <url>${SITE_URL}/assets/logo.png</url>
+        <title>Sednium News</title>
+        <link>${SITE_URL}</link>
+    </image>
+    <atom:link href="${SITE_URL}/rss?category=${categoryName.toLowerCase()}" rel="self" type="application/rss+xml"/>
     ${items}
   </channel>
 </rss>`;
-}
-
-// Vercel Serverless Function Handler
-export default async function handler(req, res) {
-    const category = req.query.category || 'top';
-    const validCategories = ['top', 'technology', 'sports', 'business', 'entertainment', 'science', 'health'];
-    const selectedCategory = validCategories.includes(category) ? category : 'top';
-
-    const articles = await fetchNews(selectedCategory);
-    const rss = generateRss(articles, selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1));
-
-    res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=300');
-    res.status(200).send(rss);
 }
