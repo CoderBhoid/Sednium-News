@@ -1,0 +1,897 @@
+:root {
+  --bg-color-light: #ffffff;
+  --text-color-light: #000000;
+  --bg-color-dark: #0e0e0e;
+  --text-color-dark: #ffffff;
+  --accent-color: #999999;
+  --transition-speed: 0.3s;
+}
+
+@font-face {
+  font-family: ndot;
+  src: url(/Ndot-57.otf);
+}
+
+body {
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  align-items: centre;
+  margin: auto;
+  padding: 1rem;
+  font-family: 'ndot';
+  background-color: var(--bg-color-light);
+  color: var(--text-color-light);
+  transition: background-color var(--transition-speed) color var(--transition-speed);
+  transition: background-color 0.3s ease-in, color 0.3s ease-in;
+}
+
+header {
+  border: black;
+}
+
+/* RSS Feed Icon Styles */
+.rss-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  border-radius: 30px;
+  background-color: #f4f4f5;
+  color: #ff8c00;
+  text-decoration: none;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-right: 0.5rem;
+}
+
+.rss-icon:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
+.rss-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Dark mode RSS icon */
+body.dark-mode .rss-icon {
+  background-color: #303136;
+  color: #ff8c00;
+}
+
+body.dark-mode .rss-icon:hover {
+  background-color: #404146;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: auto;
+}
+
+nav button {
+  padding: 0.5rem 1.2rem;
+  background: transparent;
+  border: 1px solid var(--accent-color);
+  color: inherit;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed),
+    color var(--transition-speed),
+    border var(--transition-speed);
+}
+
+nav button:hover,
+nav button.active {
+  background-color: var(--text-color-light);
+  color: var(--bg-color-light);
+}
+
+body.dark nav button:hover,
+body.dark nav button.active {
+  background-color: var(--text-color-dark);
+  color: var(--bg-color-dark);
+}
+
+#categoryInput:focus {
+  outline: none;
+  border-color: var(--text-color-light);
+}
+
+.card {
+  background-color: inherit;
+  border: 1px solid var(--accent-color);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed) ease-in;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.card h2 {
+  font-size: 1.2rem;
+  margin: 0.75rem 1rem 0.25rem;
+}
+
+.card p {
+  font-size: 0.95rem;
+  margin: 0 1rem 1rem;
+  color: var(--accent-color);
+}
+
+.card a {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-align: right;
+  font-weight: bold;
+  color: inherit;
+  text-decoration: none;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}
+
+/* Header Logo */
+.header-logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 0.5rem;
+  border-radius: 8px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Loading Spinner */
+#loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--accent-color);
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--accent-color);
+  border-top-color: var(--text-color-light);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body.dark-mode .spinner {
+  border-color: #444;
+  border-top-color: var(--text-color-dark);
+}
+
+/* Back to Top Button */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--text-color-light);
+  color: var(--bg-color-light);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, opacity 0.3s;
+  z-index: 100;
+  opacity: 1;
+}
+
+.back-to-top:hover {
+  transform: scale(1.1);
+}
+
+.back-to-top.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.dark-mode .back-to-top {
+  background: var(--text-color-dark);
+  color: var(--bg-color-dark);
+}
+
+/* Action Buttons (Share, Bookmark) */
+.read-view-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
+}
+
+.action-btn.bookmarked svg {
+  fill: currentColor;
+}
+
+body.dark-mode .action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Card Staggered Animation */
+.card {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.card.fade-in {
+  animation: cardFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes cardFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.controls {
+  text-align: center;
+  margin: auto;
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+  width: 100%;
+}
+
+.controls input {
+  width: 100%;
+  max-width: 200px;
+  padding: 0.5rem 0.5rem;
+  font-size: 1rem;
+  border: 1px solid black;
+  outline: none;
+  border-radius: 20px;
+}
+
+.categoryInput {
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid black;
+  text-align: center;
+  transition: .3s ease-in;
+}
+
+.category-buttons {
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 1rem;
+  transition: 0.5s ease-out;
+}
+
+.category-buttons buttons {
+  flex: 1 0 120px;
+  min-width: 120px;
+  max-width: 150px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  text-align: center;
+  border-radius: 8px;
+  border: none;
+  background-color: #fff;
+  color: #000;
+  white-space: nowrap;
+  /* Prevents text from wrapping */
+  transition: 0.3s ease-in;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 5px;
+}
+
+.card small {
+  display: block;
+  color: #777;
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0.5rem;
+}
+
+nav button.active {
+  background: #000;
+  color: #fff;
+  border-radius: 15px;
+  transition: .3s ease-out;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  display: block;
+  --width-of-switch: 3.5em;
+  --height-of-switch: 2em;
+  /* size of sliding icon -- sun and moon */
+  --size-of-icon: 1.4em;
+  /* it is like a inline-padding of switch */
+  --slider-offset: 0.3em;
+  width: var(--width-of-switch);
+  height: var(--height-of-switch);
+  position: relative;
+  align-items: right;
+  margin: auto;
+  margin-right: 0.5rem;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f4f4f5;
+  transition: .4s;
+  border-radius: 30px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: var(--size-of-icon, 1.4em);
+  width: var(--size-of-icon, 1.4em);
+  border-radius: 20px;
+  left: var(--slider-offset, 0.3em);
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
+  ;
+  transition: .4s;
+}
+
+input:checked+.slider {
+  background-color: #303136;
+}
+
+input:checked+.slider:before {
+  left: calc(100% - (var(--size-of-icon, 1.4em) + var(--slider-offset, 0.3em)));
+  background: #303136;
+  /* change the value of second inset in box-shadow to change the angle and direction of the moon  */
+  box-shadow: inset -3px -2px 5px -2px #8983f7, inset -10px -4px 0 0 #a3dafb;
+}
+
+/*dark Theme - Improved */
+body.dark-mode {
+  background-color: #0a0a0a;
+  color: #f0f0f0;
+  --accent-color: #888;
+}
+
+body.dark-mode .card {
+  background: #1a1a1a;
+  border-color: #333;
+}
+
+body.dark-mode .card:hover {
+  box-shadow: 0 8px 16px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .card p,
+body.dark-mode .card small {
+  color: #aaa;
+}
+
+body.dark-mode nav button {
+  border-color: #444;
+}
+
+body.dark-mode nav button.active {
+  color: #0a0a0a;
+  background-color: #f0f0f0;
+}
+
+body.dark-mode .categoryInput {
+  border: 1px solid #444;
+  color: #f0f0f0;
+  background-color: #1a1a1a;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+#categoryInput::placeholder {
+  color: black;
+  transition: 0.3s ease-in;
+}
+
+#categoryInput::-webkit-input-placeholder {
+  color: black;
+  /* Chrome, Safari */
+  transition: 0.3s ease-in;
+}
+
+#categoryInput::-moz-placeholder {
+  color: black;
+  /* Firefox */
+  transition: 0.3s ease-in;
+}
+
+#categoryInput:-ms-input-placeholder {
+  color: black;
+  /* Edge */
+  transition: 0.3s ease-in;
+}
+
+.dark-mode #categoryInput::placeholder {
+  color: white;
+  /* Lighter color for dark mode */
+}
+
+.dark-mode #categoryInput::-webkit-input-placeholder {
+  color: white;
+  /* Chrome, Safari */
+}
+
+.dark-mode #categoryInput::-moz-placeholder {
+  color: white;
+}
+
+.dark-mode #categoryInput:-ms-input-placeholder {
+  color: white;
+  /* Edge */
+}
+
+/* Read View Styles */
+#read-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color-light);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+#read-view.hidden {
+  display: flex !important;
+  transform: translateY(100%);
+}
+
+#read-view:not(.hidden) {
+  transform: translateY(0);
+}
+
+.read-view-header {
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-color-light);
+  border-bottom: 1px solid var(--accent-color);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.read-view-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Main content area */
+.read-view-main {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.read-view-content {
+  padding: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+#read-title {
+  font-size: 1.8rem;
+  line-height: 1.3;
+  margin: 0 0 0.75rem 0;
+  text-align: left;
+}
+
+.article-meta {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+
+.meta-source {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.meta-separator {
+  color: var(--accent-color);
+}
+
+.meta-author {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+}
+
+.meta-date {
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  display: block;
+}
+
+#read-img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+#read-content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  text-align: left;
+  white-space: pre-wrap;
+  margin-bottom: 2rem;
+  color: inherit;
+}
+
+/* Iframe Fallback for Read View */
+.read-view-iframe {
+  width: 100%;
+  border: none;
+  flex: 1;
+  min-height: 0;
+  /* Prevents overflow issues in flex container */
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+/* Container for iframe mode - takes full height */
+.read-view-main.iframe-mode {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Prevent main container from scrolling when iframe is shown */
+}
+
+.read-view-main.iframe-mode .read-view-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 100%;
+  /* Allow full width for iframe */
+  padding-bottom: 0;
+}
+
+/* Iframe wrapper to manage height correctly */
+.iframe-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 1rem;
+}
+
+.iframe-wrapper .read-view-iframe {
+  flex: 1;
+  height: 100%;
+}
+
+.read-original {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--text-color-light);
+  color: var(--bg-color-light);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: opacity 0.3s;
+}
+
+.read-original:hover {
+  opacity: 0.85;
+}
+
+/* Related Articles Sidebar (Desktop) */
+.related-articles {
+  width: 350px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--accent-color);
+  background-color: var(--bg-color-light);
+  overflow-y: auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.related-title {
+  font-size: 1rem;
+  margin: 0 0 1rem 0;
+  text-align: left;
+}
+
+#related-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Related Article Card */
+.related-card {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+}
+
+.related-card:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.related-card img {
+  width: 120px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.related-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.related-card-title {
+  font-size: 0.85rem;
+  font-weight: bold;
+  line-height: 1.3;
+  margin: 0 0 0.25rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.related-card-source {
+  font-size: 0.7rem;
+  color: var(--accent-color);
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  margin: 0;
+  border-radius: 8px;
+}
+
+.nav-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Dark Mode Overrides for Read View */
+body.dark-mode #read-view,
+body.dark-mode .read-view-header,
+body.dark-mode .related-articles {
+  background-color: var(--bg-color-dark);
+  color: var(--text-color-dark);
+}
+
+body.dark-mode .nav-btn:hover,
+body.dark-mode .related-card:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .read-original {
+  background-color: var(--text-color-dark);
+  color: var(--bg-color-dark);
+}
+
+/* Mobile Styles */
+@media (max-width: 900px) {
+  .read-view-body {
+    flex-direction: column;
+  }
+
+  .read-view-main {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .related-articles {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    border-left: none;
+    border-top: 1px solid var(--accent-color);
+    flex-shrink: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.75rem;
+  }
+
+  .related-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #related-container {
+    flex-direction: row;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Compact horizontal cards for mobile */
+  .related-card {
+    flex-direction: column;
+    width: 140px;
+    flex-shrink: 0;
+    padding: 0;
+    gap: 0.5rem;
+  }
+
+  .related-card img {
+    width: 140px;
+    height: 80px;
+  }
+
+  .related-card-info {
+    padding: 0 0.25rem 0.25rem;
+  }
+
+  .related-card-title {
+    font-size: 0.75rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .related-card-source {
+    font-size: 0.65rem;
+  }
+}
+
+/* ========== BOOKMARKS VIEW ========== */
+
+.saved-btn {
+  background: linear-gradient(135deg, #ff8c00, #ff0080) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.saved-btn.active {
+  box-shadow: 0 0 0 2px #ff8c00;
+}
+
+.empty-bookmarks {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--accent-color);
+}
+
+.empty-bookmarks p:first-child {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.remove-bookmark-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.remove-bookmark-btn:hover {
+  background: #ff4444;
+}

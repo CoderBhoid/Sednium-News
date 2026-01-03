@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sednium News</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header>
+    <label class="switch" for="themeToggle">
+      <input id="themeToggle" type="checkbox">
+      <span class="slider"></span>
+    </label>
+    <div class="head">
+      <img src="assets/logo.png" alt="Sednium" class="header-logo">
+      <h1>SEDNIUM NEWS</h1>
+    </div>
+    <p class="copyright">
+      ©Sednium 2025 v1.2
+      <br>
+      Proudly Open Source
+    </p>
+    <nav>
+      <div class="controls">
+        <input id="categoryInput" class="categoryInput" align="center" type="text" placeholder="Search news..." />
+      </div>
+      <div class="category-buttons">
+        <button id="top" data-category="top">Headlines</button>
+        <button data-category="technology">Technology</button>
+        <button data-category="sports">Sports</button>
+        <button data-category="business">Business</button>
+        <button data-category="entertainment">Entertainment</button>
+        <button data-category="science">Science</button>
+        <button data-category="health">Health</button>
+        <button id="saved-btn" class="saved-btn">★ Saved</button>
+      </div>
+    </nav>
+  </header>
+  <br>
+  <main>
+    <div id="news-container"></div>
+    <div id="loading" class="loading-spinner">
+      <div class="spinner"></div>
+      <span>Loading news...</span>
+    </div>
+  </main>
+  <!-- Back to Top Button -->
+  <button id="back-to-top" class="back-to-top hidden" title="Back to top">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 15l-6-6-6 6" />
+    </svg>
+  </button>
+  <div id="read-view" class="hidden">
+    <div class="read-view-header">
+      <button id="back-btn" class="nav-btn">
+        <span>← Back</span>
+      </button>
+      <div class="read-view-actions">
+        <button id="bookmark-btn" class="action-btn" title="Bookmark">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+          </svg>
+        </button>
+        <button id="share-btn" class="action-btn" title="Share">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="read-view-body">
+      <div class="read-view-main">
+        <div class="read-view-content">
+          <h1 id="read-title">Article Title</h1>
+          <div class="article-meta">
+            <div class="meta-row">
+              <span id="read-source" class="meta-source">Source</span>
+              <span class="meta-separator">•</span>
+              <span id="read-author" class="meta-author">Author</span>
+            </div>
+            <span id="read-date" class="meta-date">Date</span>
+          </div>
+          <img id="read-img" src="" alt="Article Image" />
+          <p id="read-content">Content...</p>
+          <a id="read-original-link" href="#" target="_blank" class="read-original">Read full article at source →</a>
+        </div>
+      </div>
+      <aside class="related-articles">
+        <h3 class="related-title">More News</h3>
+        <div id="related-container"></div>
+      </aside>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>

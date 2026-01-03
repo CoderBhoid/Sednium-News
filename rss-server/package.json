@@ -1,0 +1,16 @@
+{
+    "name": "nothingnews-rss",
+    "version": "1.0.0",
+    "description": "RSS feed server for Nothing Newz app",
+    "main": "api/rss.js",
+    "scripts": {
+        "start": "node api/rss.js",
+        "dev": "node api/rss.js"
+    },
+    "dependencies": {
+        "express": "^4.18.2"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
