@@ -74,3 +74,5 @@ npx cap open android
 ## © License
 Copyright 2025 **Sednium**.
 Proudly Open Source.
+
+Made with ❤️ by **Bhoid**.
