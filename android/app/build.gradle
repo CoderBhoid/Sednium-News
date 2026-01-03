@@ -16,10 +16,21 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (System.getenv("ORG_GRADLE_PROJECT_storeFile")) {
+                storeFile file(System.getenv("ORG_GRADLE_PROJECT_storeFile"))
+                storePassword System.getenv("ORG_GRADLE_PROJECT_storePassword")
+                keyAlias System.getenv("ORG_GRADLE_PROJECT_keyAlias")
+                keyPassword System.getenv("ORG_GRADLE_PROJECT_keyPassword")
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
