@@ -109,7 +109,7 @@ function generateRss(articles, categoryName) {
     <lastBuildDate>${now}</lastBuildDate>
     <generator>Sednium RSS Generator</generator>
     <image>
-        <url>${SITE_URL}/assets/logo.png</url>
+        <url>${SITE_URL}/assets/logolight.png</url>
         <title>Sednium News</title>
         <link>${SITE_URL}</link>
     </image>
