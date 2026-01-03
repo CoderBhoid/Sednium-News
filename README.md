@@ -1,53 +1,75 @@
-# Sednium News
+# Sednium News 💎
 
-A modern, polished news aggregation app featuring a unified read view, bookmarking, and native mobile support.
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg) ![Status](https://img.shields.io/badge/status-stable-success.svg)
 
-## 🚀 Features
+> A modern, premium news aggregation app crafted for speed, readability, and elegance.
+> Powered by **Sednium**.
 
--   **Unified Read View**: Scrapes full article content using a custom reliable proxy.
--   **Smart Fallbacks**: Multiple proxy layers (Own Proxy -> AllOrigins -> CorsProxy).
--   **Bookmarks**: Save articles locally for later reading.
--   **Native Mobile Experience**: Pull-to-refresh, swipe navigation, and smooth animations.
--   **Premium UI**: Dark mode, glassmorphism design, and custom typography.
--   **RSS Feed**: Dynamic RSS generation for launchers (e.g., Smart Launcher 6).
+---
 
-## 📂 Project Structure
+## ✨ Features
 
--   `N-News/`: Main web application (HTML/CSS/JS) and assets.
--   `api/`: Vercel Serverless Functions.
-    -   `proxy.js`: Custom article scraper/proxy.
-    -   `rss.js`: RSS feed generator.
--   `android/`: Native Android project (Capacitor).
+### 📖 Unified Reading Experience
+-   **No more redirects**: We scrape essential content and present it in a clean, unified "Reader View".
+-   **Smart Proxy**: Powered by a custom **Vercel Serverless Function** to reliable fetch content.
+-   **Multi-layer Fallback**: Tries Own Proxy → AllOrigins → CorsProxy to guarantee content load.
+
+### 🎨 Premium Design
+-   **Glassmorphism Branding**: Beautiful UI with vibrant gradients and blur effects.
+-   **Dark Mode**: Optimized deep-dark theme for OLED screens.
+-   **Smooth Animations**: Staggered entry animations, swipe gestures, and micro-interactions.
+
+### ⚡ Power User Tools
+-   **Bookmarks**: Save articles locally to read later (persists via LocalStorage).
+-   **Share**: Native share sheet integration.
+-   **Gestures**: Swipe left/right to navigate articles seamlessly.
+-   **RSS Feed**: Dynamic RSS generation for launcher integration (e.g., Smart Launcher 6).
+
+---
+
+## 🛠️ Tech Stack
+
+-   **Frontend**: Vanilla JS, HTML5, CSS3 (No heavy frameworks!)
+-   **Mobile**: Ionic Capacitor (Native Android Wrapper)
+-   **Backend**: Vercel Serverless Functions (Node.js)
+-   **API**: NewsData.io
+
+---
 
 ## 🌐 Deployment (Web)
 
-This project is configured for **Vercel**.
+This project is optimized for **Vercel**.
 
-1.  Push this repository to GitHub.
-2.  Import the project into Vercel.
-3.  Vercel will automatically detect `vercel.json` and deploy:
-    -   Frontend at `https://your-app.vercel.app/`
-    -   RSS Feed at `https://your-app.vercel.app/rss`
-    -   Proxy API at `https://your-app.vercel.app/api/proxy`
+1.  **Fork/Push** this repo to GitHub.
+2.  **Import** project to Vercel.
+3.  **Done!** Vercel auto-configures:
+    -   Frontend: `https://sednium-news.vercel.app`
+    -   API: `https://sednium-news.vercel.app/api/proxy`
 
-## 📱 Build for Mobile (Android)
+---
 
-1.  **Sync Web Assets**:
-    ```bash
-    npx cap sync
-    ```
-2.  **Open in Android Studio**:
-    ```bash
-    npx cap open android
-    ```
-3.  **Build**:
-    -   Go to **Build > Generate Signed Bundle / APK**.
-    -   Follow the [Mobile Release Guide](mobile_release_guide.md) for signing details.
+## 📱 Build for Android
 
-## 🛠️ Local Development
+We support **ZERO CONFIG** Cloud Builds via GitHub Actions.
 
-To run the web app locally:
-1.  Open `N-News/index.html` in your browser.
-    *   *Note: Article scraping (proxy) requires the Vercel backend and won't work fully in a local file setup.*
+### Option 1: Cloud Build (Recommended)
+NO Android Studio required!
+1.  Add your Keystore secrets to GitHub Actions (See `cloud_build_guide.md`).
+2.  Push your code.
+3.  Download the signed **APK** from the "Actions" tab!
 
-To run the full stack locally, use `vercel dev` if installed.
+### Option 2: Local Build
+If you have Android Studio installed:
+```bash
+# Sync web assets
+npx cap sync
+
+# Open Native Project
+npx cap open android
+```
+
+---
+
+## © License
+Copyright 2025 **Sednium**.
+Proudly Open Source.
