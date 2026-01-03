@@ -97,7 +97,7 @@ function generateRss(articles, category = 'Headlines') {
     <lastBuildDate>${now}</lastBuildDate>
     <atom:link href="${SITE_URL}/rss" rel="self" type="application/rss+xml"/>
     <image>
-      <url>${SITE_URL}/assets/logo.png</url>
+      <url>${SITE_URL}/assets/logolight.png</url>
       <title>Sednium News</title>
       <link>${SITE_URL}</link>
     </image>
