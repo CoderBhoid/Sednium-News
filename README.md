@@ -45,6 +45,7 @@ This project is optimized for **Vercel**.
 3.  **Done!** Vercel auto-configures:
     -   Frontend: `https://sednium-news.vercel.app`
     -   API: `https://sednium-news.vercel.app/api/proxy`
+    -   RSS Feed: `https://sednium-news.vercel.app/rss`
 
 ---
 
