@@ -353,37 +353,132 @@ categoryButtons.forEach(btn => {
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, setting initial state');
-  const themeToggle = document.getElementById('themeToggle');
+  /* ========== SETTINGS LOGIC ========== */
+
+  // Elements
+  const settingsBtn = document.getElementById('settings-trigger');
+  const settingsModal = document.getElementById('settings-modal');
+  const closeSettingsBtn = document.getElementById('close-settings');
+  const themeButtons = document.querySelectorAll('.theme-group button');
+  const fontButtons = document.querySelectorAll('.font-group button');
   const headerLogo = document.querySelector('.header-logo');
 
+  // Helper to update logo based on theme
   function updateLogo(isDark) {
     if (headerLogo) {
-      // Dark mode uses default white/light logo, Light mode uses dark/colored logo
       headerLogo.src = isDark ? 'assets/logo.png' : 'assets/logolight.png';
     }
   }
 
-  if (themeToggle) {
-    // Check local storage for theme preference
-    const storedTheme = localStorage.getItem('theme');
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = storedTheme === 'dark-mode' || (!storedTheme && systemDark);
+  // --- Theme Handling ---
+  function applyTheme(theme) {
+    // Remove existing active states
+    themeButtons.forEach(btn => btn.classList.remove('active'));
+    // Activate correct button
+    const activeBtn = document.querySelector(`.theme-group button[data-theme="${theme}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
 
+    // Apply classes
+    const isDark = theme === 'dark';
     if (isDark) {
       document.body.classList.add('dark-mode');
-      themeToggle.checked = true;
+    } else {
+      document.body.classList.remove('dark-mode');
     }
+
+    // Update logo and storage
     updateLogo(isDark);
+    localStorage.setItem('theme', theme);
+  }
 
-    themeToggle.addEventListener('change', () => {
-      document.body.classList.toggle('dark-mode');
-      const isDarkMode = document.body.classList.contains('dark-mode');
-      updateLogo(isDarkMode);
+  // Init Theme
+  const storedTheme = localStorage.getItem('theme');
+  const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const initialTheme = storedTheme ? storedTheme : (systemDark ? 'dark' : 'light');
+  applyTheme(initialTheme);
 
-      if (isDarkMode) {
-        localStorage.setItem('theme', 'dark-mode');
-      } else {
-        localStorage.setItem('theme', 'light-mode');
+  // Theme Click Listeners
+  themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      applyTheme(btn.getAttribute('data-theme'));
+    });
+  });
+
+  // --- Font Handling ---
+  function applyFont(font) {
+    // Remove active states
+    fontButtons.forEach(btn => btn.classList.remove('active'));
+    // Activate button
+    const activeBtn = document.querySelector(`.font-group button[data-font="${font}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    // Clear existing font classes
+    document.body.classList.remove('font-ndot', 'font-inter', 'font-serif');
+    // Add new class if not default (ndot is default in CSS but explicit class helps)
+    document.body.classList.add(`font-${font}`);
+
+    localStorage.setItem('font', font);
+  }
+
+  // Init Font
+  const storedFont = localStorage.getItem('font') || 'ndot';
+  applyFont(storedFont);
+
+  // Font Click Listeners
+  fontButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      applyFont(btn.getAttribute('data-font'));
+    });
+  });
+
+  // --- Warmth Slider Handling ---
+  const warmthSlider = document.getElementById('warmthSlider');
+  const warmthOverlay = document.getElementById('warmth-overlay');
+
+  function updateWarmth(value) {
+    const val = parseInt(value);
+    let color = 'transparent';
+
+    if (val > 0) {
+      // Warm (Orange/Yellow) - Max opacity 0.3 at value 50
+      const opacity = (val / 50) * 0.3;
+      color = `rgba(255, 160, 0, ${opacity})`;
+    } else if (val < 0) {
+      // Cold (Blue) - Max opacity 0.3 at value -50
+      const opacity = (Math.abs(val) / 50) * 0.2;
+      color = `rgba(0, 100, 255, ${opacity})`;
+    }
+
+    if (warmthOverlay) {
+      warmthOverlay.style.setProperty('--warmth-color', color);
+    }
+    localStorage.setItem('warmth', val);
+  }
+
+  if (warmthSlider) {
+    const storedWarmth = localStorage.getItem('warmth') || 0;
+    warmthSlider.value = storedWarmth;
+    updateWarmth(storedWarmth);
+
+    warmthSlider.addEventListener('input', (e) => {
+      updateWarmth(e.target.value);
+    });
+  }
+
+  // --- Modal Handling ---
+  if (settingsBtn && settingsModal) {
+    settingsBtn.addEventListener('click', () => {
+      settingsModal.classList.remove('hidden');
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.classList.add('hidden');
+    });
+
+    // Close on outside click
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) {
+        settingsModal.classList.add('hidden');
       }
     });
   }

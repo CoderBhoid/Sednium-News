@@ -12,20 +12,28 @@
   <link rel="alternate" type="application/rss+xml" title="Sednium News - Science" href="/rss/science" />
   <link rel="alternate" type="application/rss+xml" title="Sednium News - Business" href="/rss/business" />
   <link rel="stylesheet" href="styles.css" />
+  <!-- Google Fonts for typography options -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather:wght@300;700&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
   <header>
-    <label class="switch" for="themeToggle">
-      <input id="themeToggle" type="checkbox">
-      <span class="slider"></span>
-    </label>
+    <button id="settings-trigger" class="settings-trigger" title="Settings">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+        </path>
+      </svg>
+    </button>
     <div class="head">
       <img src="assets/logo.png" alt="Sednium" class="header-logo">
       <h1>SEDNIUM NEWS</h1>
     </div>
     <p class="copyright">
-      ©Sednium 2025 v1.2
+      ©Sednium 2025 v1.3
       <br>
       Proudly Open Source
     </p>
@@ -60,7 +68,54 @@
       <path d="M18 15l-6-6-6 6" />
     </svg>
   </button>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button id="close-settings" class="close-btn">&times;</button>
+      </div>
+      <div class="settings-section">
+        <h3>Appearance</h3>
+        <div class="option-row">
+          <span>Theme</span>
+          <div class="toggle-group theme-group">
+            <button data-theme="light" class="active">Light</button>
+            <button data-theme="dark">Dark</button>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Typography</h3>
+        <div class="option-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+          <span>Font Style</span>
+          <div class="toggle-group font-group">
+            <button data-font="ndot" class="active">Ndot</button>
+            <button data-font="inter" style="font-family: 'Inter', sans-serif;">Inter</button>
+            <button data-font="serif" style="font-family: 'Merriweather', serif;">Serif</button>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Display Warmth</h3>
+        <div class="slider-container">
+          <input type="range" min="-50" max="50" value="0" class="slider-input" id="warmthSlider">
+          <div class="slider-labels">
+            <span>Cool</span>
+            <span>Neutral</span>
+            <span>Warm</span>
+          </div>
+        </div>
+      </div>
+      <div class="settings-footer">
+        <p>Sednium News v1.3</p>
+      </div>
+    </div>
+  </div>
+
   <div id="read-view" class="hidden">
+    <!-- Read View Content similar to before -->
     <div class="read-view-header">
       <button id="back-btn" class="nav-btn">
         <span>← Back</span>
@@ -107,6 +162,25 @@
       </aside>
     </div>
   </div>
+  <div id="read-view" class="hidden">
+    <!-- Read View Content similar to before -->
+    <div class="read-view-header">
+      <button id="back-btn" class="nav-btn">
+        <span>← Back</span>
+      </button>
+      <!-- ... -->
+    </div>
+    <!-- ... -->
+    <div class="read-view-body">
+      <!-- ... -->
+      <aside class="related-articles">
+        <h3 class="related-title">More News</h3>
+        <div id="related-container"></div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="warmth-overlay"></div>
   <script src="script.js"></script>
 </body>
 
