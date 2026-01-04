@@ -413,6 +413,7 @@ const relatedContainer = document.getElementById('related-container');
 // We now use the server-side /api/read endpoint.
 
 async function openReadView(index) {
+  currentArticleIndex = index; // Update index immediately
   const article = currentArticles[index];
   if (!article) return;
 
@@ -420,6 +421,9 @@ async function openReadView(index) {
   readTitle.textContent = article.title;
   readContent.innerHTML = '<div class="spinner"></div><p style="text-align:center">Loading full article...</p>';
   readOriginalLink.href = article.link;
+
+  // Update bookmark button state immediately
+  updateBookmarkButton(isBookmarked(article.link));
 
   // Image handling
   const imageSrc = article.image_url;
@@ -449,7 +453,7 @@ async function openReadView(index) {
 
   readDate.textContent = formatDate(article.pubDate);
 
-  // Populate related articles
+  // Populate related articles(index);
   populateRelatedArticles(index);
 
   readView.classList.remove('hidden');
@@ -653,18 +657,7 @@ function navigateArticle(direction) {
   }
 }
 
-// Update openReadView to track current index and update bookmark state
-const originalOpenReadView = openReadView;
-openReadView = async function (index) {
-  currentArticleIndex = index; // Update index immediately
-  await originalOpenReadView(index);
-
-  // Update bookmark button state
-  const article = currentArticles[index];
-  if (article) {
-    updateBookmarkButton(isBookmarked(article.link));
-  }
-};
+// Update openReadView logic merged into main function above
 
 // Pull to refresh (mobile)
 let pullStartY = 0;
