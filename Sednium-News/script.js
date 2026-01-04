@@ -460,7 +460,7 @@ categoryButtons.forEach(btn => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Sednium News Script v1.6.0-mobile Loaded');
+  console.log('Sednium News Script v1.6.1-mobile-fix Loaded');
   console.log('DOM loaded, setting initial state');
   /* ========== SETTINGS LOGIC ========== */
 

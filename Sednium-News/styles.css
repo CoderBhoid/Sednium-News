@@ -1406,6 +1406,7 @@ body.dark-mode .slider-input::-webkit-slider-thumb {
 }
 
 /* Bottom Navigation (Mobile Only) */
+/* Bottom Navigation (Mobile Only) */
 .bottom-nav {
   display: none;
   /* Hidden by default (Desktop) */
@@ -1416,10 +1417,16 @@ body.dark-mode .slider-input::-webkit-slider-thumb {
   background-color: var(--bg-color-light);
   border-top: 1px solid var(--accent-color);
   justify-content: space-around;
+  /* Space items evenly */
   align-items: center;
   padding: 0.5rem 0;
   z-index: 1000;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+
+  /* CRITICAL OVERRIDES for global 'nav' conflict */
+  flex-wrap: nowrap !important;
+  margin: 0 !important;
+  gap: 0 !important;
 }
 
 body.dark-mode .bottom-nav {
@@ -1430,16 +1437,22 @@ body.dark-mode .bottom-nav {
 .nav-item {
   background: none;
   border: none;
-  display: flex;
+  display: flex !important;
+  /* Force flex */
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  justify-content: center;
+  gap: 4px;
   color: var(--accent-color);
-  font-size: 0.75rem;
-  padding: 0.5rem;
+  font-size: 0.7rem;
+  padding: 8px 0 !important;
+  /* Reset global padding */
   width: 100%;
   cursor: pointer;
-  transition: color 0.2s;
+
+  /* Reset global nav button styles */
+  border-radius: 0 !important;
+  margin: 0 !important;
 }
 
 .nav-item svg {
