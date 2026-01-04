@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     const category = (req.query.category || 'top').toLowerCase();
 
     // Select feeds based on category, fallback to 'top'
-    const feedUrls = FEEDS[category] || FEEDS['top'];
+    const feedUrls = RSS_FEEDS[category] || RSS_FEEDS['top'];
 
     try {
         // Fetch all feeds in parallel
