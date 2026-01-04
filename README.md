@@ -61,25 +61,14 @@ Copy these exact links into Smart Launcher:
 
 ---
 
-## 📱 Build for Android
+## 📱 Download Android App
 
-We support **ZERO CONFIG** Cloud Builds via GitHub Actions.
+🚀 **Get the App!**
+You can download the latest signed **APK** directly from our [Releases Page](https://github.com/CoderBhoid/Sednium-News/releases).
 
-### Option 1: Cloud Build (Recommended)
-NO Android Studio required!
-1.  Add your Keystore secrets to GitHub Actions (See `cloud_build_guide.md`).
-2.  Push your code.
-3.  Download the signed **APK** from the "Actions" tab!
-
-### Option 2: Local Build
-If you have Android Studio installed:
-```bash
-# Sync web assets
-npx cap sync
-
-# Open Native Project
-npx cap open android
-```
+1.  Go to **Releases**.
+2.  Download `app-release.apk`.
+3.  Install! (You may need to "Allow from Unknown Sources").
 
 ---
 
