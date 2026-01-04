@@ -498,7 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Update logo and storage
-    updateLogo(isDark);
+    try {
+      updateLogo(isDark);
+    } catch (e) { console.error('Logo update failed', e); }
     localStorage.setItem('theme', theme);
   }
 
@@ -890,6 +892,7 @@ async function openReadView(index) {
   const article = currentArticles[index];
   if (!article) return;
 
+  // Render content
   renderReadView({
     title: article.title,
     link: article.link,
@@ -899,6 +902,11 @@ async function openReadView(index) {
     pubDate: article.pubDate,
     description: article.description
   });
+
+  // *** CRITICAL FIX: Update Bookmark Button State ***
+  const bookmarks = JSON.parse(localStorage.getItem('savedArticles') || '[]');
+  const isBookmarked = bookmarks.some(b => b.link === article.link);
+  updateBookmarkButton(isBookmarked);
 }
 
 /**
@@ -1076,20 +1084,26 @@ function toggleBookmark(article) {
     // Remove bookmark
     bookmarks.splice(index, 1);
     updateBookmarkButton(false);
+    console.log('Bookmark removed');
   } else {
     // Add bookmark
     bookmarks.push({
       title: article.title,
       link: article.link,
       source: article.source_id,
-      image: article.image_url,
+      image: article.image_url || null, // Ensure image is stored even if null
       date: article.pubDate,
       savedAt: new Date().toISOString()
     });
     updateBookmarkButton(true);
+    console.log('Bookmark added');
   }
 
   saveBookmarks(bookmarks);
+
+  // If we are in Saved view, realtime update?
+  // Maybe dangerous to remove card immediately while reading.
+  // We'll leave it until refresh.
 }
 
 function updateBookmarkButton(isActive) {
