@@ -325,6 +325,12 @@ body.dark-mode #apply-filters {
   font-size: 0.95rem;
   margin: 0 1rem 1rem;
   color: var(--accent-color);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Limit to 3 lines (~20-25 words) */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card a {
@@ -590,7 +596,6 @@ body.dark-mode nav button.active {
 /* Settings Trigger - Reset to sit in flow */
 .settings-trigger {
   position: static;
-  /* Reset from absolute */
   background: none;
   border: none;
   cursor: pointer;
@@ -602,32 +607,10 @@ body.dark-mode nav button.active {
   border-radius: 50%;
   transition: background-color 0.2s;
   margin-left: 0.5rem;
-  /* Space from input */
   width: 40px;
   height: 40px;
-}
-
-/* Removed orphaned CSS block that caused syntax errors */
-}
-
-.settings-trigger:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  transform: rotate(45deg);
-}
-
-body.dark-mode .settings-trigger {
-  color: var(--text-color-dark);
-  border-color: #444;
-}
-
-body.dark-mode .settings-trigger:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Modal Styles */
-body.modal-open {
-  overflow: hidden;
-  /* Lock scroll */
+  flex-shrink: 0;
+  /* DETECTED FIX: Prevent search bar from squishing button */
 }
 
 /* Modal Styles */
@@ -637,20 +620,21 @@ body.modal-open {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  /* Slightly darker since blur is gone */
+  background: rgba(0, 0, 0, 0.8);
+  /* Darker overlay for better visibility */
   display: flex !important;
-  /* Override any potential hidden utility */
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 9999;
+  /* MAX Z-INDEX to ensure top visibility */
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   will-change: opacity;
-  /* backdrop-filter: blur(4px); Removed for performance (Lag Fix) */
 }
+
+/* Cleaned up duplicate CSS */
 
 .modal.visible {
   opacity: 1;
