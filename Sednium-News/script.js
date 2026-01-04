@@ -728,6 +728,18 @@ function populateRelatedArticles(currentIndex) {
     `;
     card.addEventListener('click', () => openReadView(actualIndex));
     relatedContainer.appendChild(card);
+    card.addEventListener('click', () => openReadView(actualIndex));
+    relatedContainer.appendChild(card);
+  });
+}
+
+// Toggle Related Logic
+const toggleRelatedBtn = document.getElementById('toggle-related');
+if (toggleRelatedBtn) {
+  toggleRelatedBtn.addEventListener('click', () => {
+    const relatedSection = document.querySelector('.related-articles');
+    relatedSection.classList.toggle('collapsed');
+    toggleRelatedBtn.textContent = relatedSection.classList.contains('collapsed') ? 'Show' : 'Hide';
   });
 }
 

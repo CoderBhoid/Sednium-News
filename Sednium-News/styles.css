@@ -484,22 +484,48 @@ body.dark-mode .action-btn:hover {
   width: 100%;
 }
 
-.controls input {
+.search-wrapper {
+  display: flex;
+  align-items: center;
   width: 100%;
-  max-width: 200px;
-  padding: 0.5rem 0.5rem;
-  font-size: 1rem;
-  border: 1px solid black;
+  max-width: 320px;
+  background: var(--bg-color-light);
+  /* Or transparent if inputs have bg */
+  border: 1px solid var(--text-color-light);
+  /* Border on wrapper now */
+  border-radius: 24px;
+  padding: 0.2rem 0.5rem;
+  transition: box-shadow 0.2s;
+  background-color: transparent;
+}
+
+body.dark-mode .search-wrapper {
+  border-color: #666;
+}
+
+.search-wrapper:focus-within {
+  box-shadow: 0 0 0 2px var(--accent-color);
+  border-color: transparent;
+}
+
+.controls input {
+  flex: 1;
+  /* Take remaining space */
+  border: none;
+  background: transparent;
   outline: none;
-  border-radius: 20px;
+  padding: 0.6rem;
+  font-size: 1rem;
+  color: inherit;
+  min-width: 0;
 }
 
 .categoryInput {
-  padding: 10px;
-  border-radius: 15px;
-  border: 1px solid black;
-  text-align: center;
-  transition: .3s ease-in;
+  /* Overridden by .controls input above */
+}
+
+text-align: center;
+transition: .3s ease-in;
 }
 
 .category-buttons {
@@ -1031,12 +1057,41 @@ body.dark-mode .categoryInput {
   overflow-y: auto;
   padding: 1rem;
   box-sizing: border-box;
+  transition: transform 0.3s ease, height 0.3s ease;
+}
+
+.related-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .related-title {
   font-size: 1rem;
-  margin: 0 0 1rem 0;
+  margin: 0;
   text-align: left;
+}
+
+#toggle-related {
+  background: none;
+  border: 1px solid var(--accent-color);
+  border-radius: 12px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Collapsed State */
+.related-articles.collapsed {
+  height: 60px;
+  /* Only header visible */
+  overflow: hidden;
+}
+
+.related-articles.collapsed #related-container {
+  display: none;
 }
 
 #related-container {
