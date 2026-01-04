@@ -599,6 +599,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (settingsModal) {
       settingsModal.classList.remove('visible');
       document.body.classList.remove('modal-open');
+
+      // Force remove style if it stuck (safety)
+      setTimeout(() => {
+        if (!settingsModal.classList.contains('visible')) {
+          settingsModal.style.pointerEvents = ''; // Reset inline if any
+        }
+      }, 300);
     }
   }
 
@@ -617,6 +624,55 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === settingsModal) {
         closeSettings();
       }
+    });
+  }
+
+  // --- Saved Tab Logic ---
+  const savedBtn = document.getElementById('saved-btn');
+
+  function loadSavedArticles() {
+    const saved = JSON.parse(localStorage.getItem('savedArticles') || '[]');
+    // Reverse to show newest saved first? Or keep order.
+    // Usually LIFO (Stack) is better for "Saved".
+    renderArticles(saved.reverse());
+
+    // Update active state
+    if (categoryButtons) {
+      categoryButtons.forEach(btn => btn.classList.remove('active'));
+    }
+    if (savedBtn) savedBtn.classList.add('active');
+
+    // Set URL param to 'saved' (optional, or just clear category)
+    // setCategoryInUrl('saved'); // If we want to persist refreshing on saved tab
+  }
+
+  if (savedBtn) {
+    savedBtn.addEventListener('click', () => {
+      setActiveCategory(null); // Clear other highlights
+      // Don't call fetchNews!
+      loadSavedArticles();
+    });
+  }
+
+  // --- Android Back Button Handling ---
+  if (window.Capacitor) {
+    const App = window.Capacitor.Plugins.App;
+
+    App.addListener('backButton', ({ canGoBack }) => {
+      // Priority 1: Close Settings Modal
+      if (settingsModal && settingsModal.classList.contains('visible')) {
+        closeSettings();
+        return;
+      }
+
+      // Priority 2: Close Read View
+      if (readView && !readView.classList.contains('hidden')) {
+        closeReadView();
+        return;
+      }
+
+      // Priority 3: Apps usually minimize or exit
+      App.exitApp();
     });
   }
 
