@@ -74,9 +74,14 @@ function generateRss(articles, categoryName) {
         const title = escapeXml(article.title || 'Untitled');
         const link = escapeXml(article.link || '');
         const description = escapeXml(article.description || article.content || 'No description available.');
+        const title = article.title || 'Untitled';
+        const description = article.description || article.content || 'No description available.';
         const pubDate = toRfc822Date(article.pubDate);
         const source = escapeXml(article.source_id || 'Sednium News');
         const imageUrl = article.image_url;
+
+        // Redirect to our reader view
+        const readerLink = `${SITE_URL}/?read=${encodeURIComponent(article.link)}`;
 
         // Smart Launcher prefers <media:content> or <enclosure>
         // We provide enclosure for max compatibility
@@ -85,14 +90,14 @@ function generateRss(articles, categoryName) {
             : '';
 
         return `    <item>
-      <title>${title}</title>
-      <link>${link}</link>
-      <description>${description}</description>
+      <title><![CDATA[${title}]]></title>
+      <link>${readerLink}</link>
+      <description><![CDATA[${description}]]></description>
       <category>${categoryName}</category>
       <pubDate>${pubDate}</pubDate>
-      <source url="${link}">${source}</source>
+      <source url="${escapeXml(article.link)}">${source}</source>
       ${mediaTag}
-      <guid isPermaLink="false">${article.article_id || link}</guid>
+      <guid isPermaLink="false">${article.link}</guid>
     </item>`;
     }).join('\n');
 

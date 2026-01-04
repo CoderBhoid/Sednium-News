@@ -389,6 +389,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const { mode, value } = getSearchParams();
+  const urlParams = new URLSearchParams(window.location.search);
+  const readUrl = urlParams.get('read');
+
+  if (readUrl) {
+    // Deep link to reader mode
+    console.log('Deep link detected:', readUrl);
+    renderReadView({
+      link: readUrl,
+      title: 'Loading Article...',
+      source_id: 'External Link'
+    });
+  }
+
   console.log('Initial mode:', mode, 'value:', value);
   if (mode === 'category') {
     setActiveCategory(value); // Ensure "Headlines" (top) is active by default
@@ -461,16 +474,29 @@ async function openReadView(index) {
   const article = currentArticles[index];
   if (!article) return;
 
-  // Show view immediately with loading state
-  readTitle.textContent = article.title;
-  readContent.innerHTML = '<div class="spinner"></div><p style="text-align:center">Loading full article...</p>';
-  readOriginalLink.href = article.link;
+  renderReadView({
+    title: article.title,
+    link: article.link,
+    image_url: article.image_url,
+    source_id: article.source_id,
+    creator: article.creator,
+    pubDate: article.pubDate,
+    description: article.description
+  });
+}
 
-  // Update bookmark button state immediately
-  updateBookmarkButton(isBookmarked(article.link));
+/**
+ * versatile function to render read view from an object
+ * Used by both the main list click and external deep links
+ */
+async function renderReadView(articleData) {
+  // Show view immediately with loading state
+  readTitle.textContent = articleData.title || 'Loading...';
+  readContent.innerHTML = '<div class="spinner"></div><p style="text-align:center">Loading full article...</p>';
+  readOriginalLink.href = articleData.link;
 
   // Image handling
-  const imageSrc = article.image_url;
+  const imageSrc = articleData.image_url;
   if (isValidImageUrl(imageSrc)) {
     readImg.src = imageSrc;
     readImg.style.display = 'block';
@@ -479,12 +505,12 @@ async function openReadView(index) {
   }
 
   // Set source, author, and date
-  readSource.textContent = article.source_id || 'Unknown Source';
+  readSource.textContent = articleData.source_id || 'Sednium News';
 
   // Author handling
   const readAuthor = document.getElementById('read-author');
   const metaSeparator = document.querySelector('.meta-separator');
-  const creator = article.creator ? (Array.isArray(article.creator) ? article.creator.join(', ') : article.creator) : null;
+  const creator = articleData.creator ? (Array.isArray(articleData.creator) ? articleData.creator.join(', ') : articleData.creator) : null;
 
   if (creator) {
     readAuthor.textContent = creator;
@@ -495,10 +521,12 @@ async function openReadView(index) {
     if (metaSeparator) metaSeparator.style.display = 'none';
   }
 
-  readDate.textContent = formatDate(article.pubDate);
+  readDate.textContent = articleData.pubDate ? formatDate(articleData.pubDate) : '';
 
-  // Populate related articles(index);
-  populateRelatedArticles(index);
+  // For deep links, we might not have related articles immediately available from currentArticles
+  if (currentArticles.length > 0) {
+    populateRelatedArticles(currentArticleIndex || 0);
+  }
 
   readView.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
@@ -506,22 +534,30 @@ async function openReadView(index) {
 
   try {
     // Call our Reader API
-    const response = await fetch(`/api/read?url=${encodeURIComponent(article.link)}`);
+    const response = await fetch(`/api/read?url=${encodeURIComponent(articleData.link)}`);
     const data = await response.json();
 
-    if (data.status === 'success' && data.content) {
-      // Inject clean HTML content
-      readContent.innerHTML = data.content;
+    if (data.status === 'success') {
+      // If we didn't have title/image before, update them now if available
+      if ((!articleData.title || articleData.title === 'Loading...') && data.title) {
+        readTitle.textContent = data.title;
+      }
+
+      if (data.content) {
+        readContent.innerHTML = data.content;
+      } else {
+        throw new Error('No content returned');
+      }
     } else {
       throw new Error('Content extraction failed');
     }
   } catch (err) {
     console.error('Reader API error:', err);
-    // Fallback: show description
+    // Fallback
     readContent.innerHTML = `
-      <p>${article.description || 'Summary not available.'}</p>
+      <p>${articleData.description || 'Summary not available.'}</p>
       <br>
-      <p class="read-original">Unable to load full content. <a href="${article.link}" target="_blank">Read original article</a></p>
+      <p class="read-original">Unable to load full content. <a href="${articleData.link}" target="_blank">Read original article</a></p>
     `;
   }
 }

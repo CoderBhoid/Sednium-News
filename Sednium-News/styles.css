@@ -619,6 +619,20 @@ body.dark-mode .categoryInput {
   color: inherit;
 }
 
+/* Ensure images embedded in content fit the screen */
+#read-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: 8px;
+}
+
+#read-content figure {
+  margin: 0;
+  padding: 0;
+}
+
 /* Iframe Fallback for Read View */
 .read-view-iframe {
   width: 100%;
