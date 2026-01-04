@@ -1453,11 +1453,37 @@ body.dark-mode .bottom-nav {
   /* Reset global nav button styles */
   border-radius: 0 !important;
   margin: 0 !important;
+
+  /* Reset background from global nav button */
+  background-color: transparent !important;
 }
 
 .nav-item svg {
   width: 24px;
   height: 24px;
+  stroke-width: 2px;
+}
+
+/* Active State - Color only, no background box */
+.nav-item.active {
+  color: var(--accent-color) !important;
+  background-color: transparent !important;
+  font-weight: 600;
+}
+
+/* Remove hover background on mobile to avoid sticky square */
+.nav-item:hover {
+  background-color: transparent !important;
+  color: var(--accent-color);
+}
+
+body.dark-mode .nav-item.active {
+  color: var(--accent-color) !important;
+  /* Keep accent color in dark mode too */
+}
+
+width: 24px;
+height: 24px;
 }
 
 .nav-item.active {
