@@ -633,14 +633,30 @@ function navigateArticle(direction) {
 
   const newIndex = currentArticleIndex + direction;
   if (newIndex >= 0 && newIndex < currentArticles.length) {
-    openReadView(newIndex);
+    // Animate out
+    const contentContainer = document.querySelector('.read-view-content');
+    const exitClass = direction > 0 ? 'slide-out-left' : 'slide-out-right';
+    const enterClass = direction > 0 ? 'slide-in-right' : 'slide-in-left';
+
+    contentContainer.classList.add(exitClass);
+
+    // Wait for animation to finish before switching content
+    setTimeout(() => {
+      contentContainer.classList.remove(exitClass);
+      openReadView(newIndex).then(() => {
+        // Animate in new content
+        const newContainer = document.querySelector('.read-view-content');
+        newContainer.classList.add(enterClass);
+        setTimeout(() => newContainer.classList.remove(enterClass), 300);
+      });
+    }, 250);
   }
 }
 
 // Update openReadView to track current index and update bookmark state
 const originalOpenReadView = openReadView;
 openReadView = async function (index) {
-  currentArticleIndex = index;
+  currentArticleIndex = index; // Update index immediately
   await originalOpenReadView(index);
 
   // Update bookmark button state
