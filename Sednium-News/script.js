@@ -296,7 +296,14 @@ async function fetchNews(reset = false) {
             <small>${formatDate(article.pubDate)}</small>
           `;
           // Click on card to open read view
-          card.addEventListener('click', () => openReadView(articleIndex));
+          card.addEventListener('click', () => {
+            console.log('Card clicked! Index:', articleIndex);
+            try {
+              openReadView(articleIndex);
+            } catch (e) {
+              console.error('Error opening read view:', e);
+            }
+          });
           newsContainer.appendChild(card);
           requestAnimationFrame(() => {
             card.classList.add('fade-in');
@@ -409,8 +416,45 @@ const readContent = document.getElementById('read-content');
 const readOriginalLink = document.getElementById('read-original-link');
 const relatedContainer = document.getElementById('related-container');
 
-// Obsolete client-side scraping functions removed. 
 // We now use the server-side /api/read endpoint.
+
+/**
+ * Populates the related articles sidebar with other articles.
+ */
+function populateRelatedArticles(currentIndex) {
+  relatedContainer.innerHTML = '';
+
+  // Get articles excluding the current one
+  const relatedArticles = currentArticles.filter((_, i) => i !== currentIndex).slice(0, 10);
+
+  relatedArticles.forEach((article, i) => {
+    // Find the actual index in currentArticles
+    const actualIndex = currentArticles.findIndex(a => a === article);
+
+    // Get image or hide it
+    let imgHtml = '';
+    if (isValidImageUrl(article.image_url)) {
+      imgHtml = `<img src="${article.image_url}" alt="" onerror="this.style.display='none'">`;
+    } else {
+      // Use random category fallback for variety
+      const { mode, value } = getSearchParams();
+      const fallbackImg = getCategoryFallbackImage(mode === 'category' ? value : 'default');
+      imgHtml = `<img src="${fallbackImg}" alt="">`;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'related-card';
+    card.innerHTML = `
+      ${imgHtml}
+      <div class="related-card-info">
+        <p class="related-card-title">${article.title}</p>
+        <span class="related-card-source">${article.source_id || 'Unknown'}</span>
+      </div>
+    `;
+    card.addEventListener('click', () => openReadView(actualIndex));
+    relatedContainer.appendChild(card);
+  });
+}
 
 async function openReadView(index) {
   currentArticleIndex = index; // Update index immediately
