@@ -190,6 +190,34 @@ body.dark-mode .tool-modal {
   border-color: #444;
 }
 
+.modal-content {
+  background: var(--bg-color-light);
+  color: var(--text-color-light);
+  /* Explicit default */
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: modalEnter 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+body.dark-mode .modal-content {
+  background: #1a1a1a;
+  color: var(--text-color-dark);
+  /* Fix visibility */
+  border: 1px solid #333;
+}
+
+body.dark-mode .modal-content h2,
+body.dark-mode .modal-content h3,
+body.dark-mode .modal-content span {
+  color: var(--text-color-dark);
+}
+
 .tool-modal h4 {
   margin: 0 0 1rem 0;
   font-size: 1rem;

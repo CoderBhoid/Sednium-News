@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const warmthSlider = document.getElementById('warmthSlider');
   const warmthOverlay = document.getElementById('warmth-overlay');
 
-  function updateWarmth(value) {
+  function updateWarmth(value, save = true) {
     const val = parseInt(value);
     let color = 'transparent';
 
@@ -562,7 +562,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (warmthOverlay) {
       warmthOverlay.style.setProperty('--warmth-color', color);
     }
-    localStorage.setItem('warmth', val);
+
+    if (save) {
+      localStorage.setItem('warmth', val);
+    }
   }
 
   if (warmthSlider) {
@@ -570,8 +573,17 @@ document.addEventListener('DOMContentLoaded', () => {
     warmthSlider.value = storedWarmth;
     updateWarmth(storedWarmth);
 
+    // Update Visuals on Drag (Fast)
     warmthSlider.addEventListener('input', (e) => {
-      updateWarmth(e.target.value);
+      // Use requestAnimationFrame for smooth UI updates
+      requestAnimationFrame(() => {
+        updateWarmth(e.target.value, false); // false = don't save yet
+      });
+    });
+
+    // Save to Storage on Release (Prevents Lag)
+    warmthSlider.addEventListener('change', (e) => {
+      updateWarmth(e.target.value, true); // true = save now
     });
   }
 
