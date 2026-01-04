@@ -114,6 +114,24 @@ body.dark nav button.active {
   width: 100%;
 }
 
+/* Source List in Settings */
+.source-list-settings {
+  width: 100%;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid var(--accent-color);
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+body.dark-mode .source-list-settings {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .feed-tools {
   display: flex;
   gap: 0.5rem;
@@ -196,10 +214,22 @@ body.dark-mode .tool-modal {
   gap: 0.5rem;
   font-size: 0.9rem;
   cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.source-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .source-item:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .source-item input {
   accent-color: #ff8c00;
+  width: 16px;
+  height: 16px;
 }
 
 #apply-filters {

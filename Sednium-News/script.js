@@ -297,7 +297,7 @@ async function fetchNews(reset = false) {
  */
 function generateSourceFilters(articles) {
   const sources = new Set(articles.map(a => a.source_id || 'Unknown'));
-  const list = document.getElementById('source-list');
+  const list = document.getElementById('settings-source-list');
   if (!list) return;
 
   list.innerHTML = '';
@@ -314,17 +314,70 @@ function generateSourceFilters(articles) {
             <span>${source}</span>
         `;
 
+    // Handle click on the row (not just checkbox)
     div.addEventListener('click', (e) => {
-      if (e.target.tagName !== 'INPUT') {
-        const checkbox = div.querySelector('input');
+      const checkbox = div.querySelector('input');
+      if (e.target !== checkbox) {
         checkbox.checked = !checkbox.checked;
       }
-      // Update immediately on click? Or wait for Apply button?
-      // User requested "choose... provider", let's wait for Apply button for better UX on mobile
+
+      // Update logic
+      if (checkbox.checked) {
+        activeFilters.add(source);
+      } else {
+        activeFilters.delete(source);
+      }
+
+      // If all unchecked, activeFilters is empty == show all? 
+      // Logic in applyFiltersAndSort: if size > 0, filter.
+      // If I uncheck all, size is 0 -> Shows all. That's actually intuitive (selecting none means no filter).
+      // But if I want to "Exclude" everything, I see nothing.
+      // Best UX: "Uncheck to hide" implies if I uncheck one, it hides. If I uncheck ALL, I see nothing?
+      // Or "Check to show".
+      // If start with all checked (implicit).
+      // Let's populate activeFilters with ALL sources initially if empty.
+      if (activeFilters.size === 0 && isChecked) {
+        // First interaction: Populate with all except the one unchecked?
+        // This is complex. 
+        // Simple logic:
+        // activeFilters stores ALLOWED sources.
+        // If activeFilters is empty, we assume ALL allowed.
+        // So if I uncheck valid source, I need to add ALL OTHERS to activeFilters first.
+      }
+
+      // BETTER LOGIC:
+      // On load, `activeFilters` is empty (Show All).
+      // When generating list, if empty, we check all boxes.
+
+      // When USER clicks:
+      // 1. Gather ALL checked boxes.
+      // 2. Update `activeFilters`.
+      // 3. Call `apply`.
+
+      updateFiltersFromUI();
     });
 
     list.appendChild(div);
   });
+}
+
+function updateFiltersFromUI() {
+  const checkboxes = document.querySelectorAll('#settings-source-list input');
+  activeFilters.clear();
+  let checkedCount = 0;
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      activeFilters.add(cb.value);
+      checkedCount++;
+    }
+  });
+
+  // If all are checked, we can clear set to optimize (optional, but consistent with empty=all)
+  if (checkedCount === checkboxes.length) {
+    activeFilters.clear();
+  }
+
+  applyFiltersAndSort();
 }
 
 /**
@@ -540,71 +593,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Feed Tools (Filter/Sort) ---
-  const filterBtn = document.getElementById('filter-btn');
-  const sortBtn = document.getElementById('sort-btn');
-  const filterModal = document.getElementById('filter-modal');
-  const sortModal = document.getElementById('sort-modal');
-  const applyFiltersBtn = document.getElementById('apply-filters');
-  const sortInputs = document.querySelectorAll('input[name="sortOrder"]');
+  // --- Feed Tools (Sort/Filter in Settings) ---
 
-  function closeToolModals() {
-    if (filterModal) filterModal.classList.add('hidden');
-    if (sortModal) sortModal.classList.add('hidden');
-    if (filterBtn) filterBtn.classList.remove('active');
-    if (sortBtn) sortBtn.classList.remove('active');
+  // Sort Buttons Logic
+  const sortButtons = document.querySelectorAll('.sort-group button');
+
+  function applySortUI(sortMode) {
+    sortButtons.forEach(btn => btn.classList.remove('active'));
+    const active = document.querySelector(`.sort-group button[data-sort="${sortMode}"]`);
+    if (active) active.classList.add('active');
   }
 
-  if (filterBtn && filterModal) {
-    filterBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isHidden = filterModal.classList.contains('hidden');
-      closeToolModals();
-      if (isHidden) {
-        filterModal.classList.remove('hidden');
-        filterBtn.classList.add('active');
-      }
-    });
-  }
+  // Init Sort UI
+  applySortUI(currentSort);
 
-  if (sortBtn && sortModal) {
-    sortBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isHidden = sortModal.classList.contains('hidden');
-      closeToolModals();
-      if (isHidden) {
-        sortModal.classList.remove('hidden');
-        sortBtn.classList.add('active');
-      }
-    });
-  }
-
-  // Apply Filters
-  if (applyFiltersBtn) {
-    applyFiltersBtn.addEventListener('click', () => {
-      const checkboxes = document.querySelectorAll('#source-list input:checked');
-      activeFilters.clear();
-      checkboxes.forEach(cb => activeFilters.add(cb.value));
-      // If all unchecked, treated as "show all" (reset activeFilters to empty set effectively, or handle logic)
-      // To implement "show all if none selected", logic in applyFiltersAndSort handles activeFilters.size > 0
+  sortButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSort = btn.getAttribute('data-sort');
+      applySortUI(currentSort);
       applyFiltersAndSort();
-      closeToolModals();
-    });
-  }
-
-  // Apply Sort
-  sortInputs.forEach(input => {
-    input.addEventListener('change', (e) => {
-      currentSort = e.target.value;
-      applyFiltersAndSort();
-      closeToolModals();
     });
   });
 
   // Close modals on outside click
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.tool-modal') && !e.target.closest('.tool-btn')) {
-      closeToolModals();
+    // If settings modal is open, close it on outside click
+    if (!settingsModal.classList.contains('hidden') && !e.target.closest('#settings-modal') && !e.target.closest('#settings-trigger')) {
+      settingsModal.classList.add('hidden');
     }
   });
 
