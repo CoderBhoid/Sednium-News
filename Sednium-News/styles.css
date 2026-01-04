@@ -551,6 +551,7 @@ body.dark-mode .categoryInput {
 .read-view-main {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   min-width: 0;
 }
 
@@ -906,6 +907,60 @@ body.dark-mode .read-original {
   transition: background 0.2s;
 }
 
-.remove-bookmark-btn:hover {
-  background: #ff4444;
+background: #ff4444;
+}
+
+/* Slide Animations for Read View (Smooth Swipe) */
+.slide-out-left {
+  animation: slideOutLeft 0.25s forwards ease-in-out;
+}
+
+.slide-out-right {
+  animation: slideOutRight 0.25s forwards ease-in-out;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.25s forwards ease-in-out;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.25s forwards ease-in-out;
+}
+
+@keyframes slideOutLeft {
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideOutRight {
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
