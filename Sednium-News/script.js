@@ -230,6 +230,19 @@ function isValidImageUrl(url) {
 }
 
 async function fetchNews(reset = false) {
+  if (typeof isBookmarksView !== 'undefined' && isBookmarksView) {
+    if (reset) {
+      // If reset is called (e.g. Pull to refresh), we should probably stay in Saved mode?
+      // Or user wants to refresh the saved list?
+      // loadSavedArticles() should be called instead.
+      // But if fetchNews is called, it might be from infinite scroll.
+      console.log('fetchNews blocked by isBookmarksView');
+      return;
+    }
+    // Infinite scroll also blocked
+    return;
+  }
+
   if (isLoading) return;
   isLoading = true;
   if (!reset) {
