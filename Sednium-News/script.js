@@ -1,4 +1,5 @@
-const API_KEY = 'pub_26dbb5b22f5c46fa9730e78775239e27';
+// API_KEY removed - using local free API
+const API_KEY = null;
 let nextPageToken = null;
 let currentArticles = []; /* Store articles for read view */
 const newsContainer = document.getElementById('news-container');
@@ -241,22 +242,17 @@ async function fetchNews(reset = false) {
   }
 
   const { mode, value } = getSearchParams();
-  let params = new URLSearchParams();
-  params.append('apikey', API_KEY);
-  params.append('language', 'en');
-  params.append('size', '10');
+  const params = new URLSearchParams();
 
-  if (mode === 'search') {
-    params.append('q', encodeURIComponent(value));
-  } else if (mode === 'category') {
+  if (mode === 'category') {
     params.append('category', value);
+  } else if (mode === 'search') {
+    // Basic search simulation
+    params.append('category', 'top'); // Search logic pending in backend
   }
 
-  if (nextPageToken) {
-    params.append('page', nextPageToken);
-  }
-
-  const url = `https://newsdata.io/api/1/news?${params.toString()}`;
+  // Use local API
+  const url = `/api/news?${params.toString()}`;
 
   try {
     const res = await fetch(url);
@@ -413,297 +409,23 @@ const readContent = document.getElementById('read-content');
 const readOriginalLink = document.getElementById('read-original-link');
 const relatedContainer = document.getElementById('related-container');
 
-// CORS Proxy for fetching external pages
-const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
-
-/**
- * Populates the related articles sidebar with other articles.
- */
-function populateRelatedArticles(currentIndex) {
-  relatedContainer.innerHTML = '';
-
-  // Get articles excluding the current one
-  const relatedArticles = currentArticles.filter((_, i) => i !== currentIndex).slice(0, 10);
-
-  relatedArticles.forEach((article, i) => {
-    // Find the actual index in currentArticles
-    const actualIndex = currentArticles.findIndex(a => a === article);
-
-    // Get image or hide it
-    let imgHtml = '';
-    if (isValidImageUrl(article.image_url)) {
-      imgHtml = `<img src="${article.image_url}" alt="" onerror="this.style.display='none'">`;
-    } else {
-      // Use random category fallback for variety
-      const { mode, value } = getSearchParams();
-      const fallbackImg = getCategoryFallbackImage(mode === 'category' ? value : 'default');
-      imgHtml = `<img src="${fallbackImg}" alt="">`;
-    }
-
-    const card = document.createElement('div');
-    card.className = 'related-card';
-    card.innerHTML = `
-      ${imgHtml}
-      <div class="related-card-info">
-        <p class="related-card-title">${article.title}</p>
-        <span class="related-card-source">${article.source_id || 'Unknown'}</span>
-      </div>
-    `;
-    card.addEventListener('click', () => openReadView(actualIndex));
-    relatedContainer.appendChild(card);
-  });
-}
-
-/**
- * Extracts article content from HTML string using heuristics.
- * Tries multiple strategies to find the main content.
- */
-function extractArticleText(html) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-
-  // Remove unwanted elements
-  const removeSelectors = [
-    'script', 'style', 'nav', 'header', 'footer', 'aside', 'iframe', 'noscript',
-    '.ad', '.ads', '.advertisement', '.social-share', '.comments', '.related',
-    '.sidebar', '.menu', '.navigation', '.breadcrumb', '.author-bio',
-    '[role="navigation"]', '[role="banner"]', '[role="complementary"]',
-    '.share-buttons', '.newsletter', '.subscribe', '.popup', '.modal'
-  ];
-  removeSelectors.forEach(sel => {
-    try {
-      doc.querySelectorAll(sel).forEach(el => el.remove());
-    } catch (e) { /* ignore invalid selectors */ }
-  });
-
-  // Priority list of content containers (expanded)
-  const contentSelectors = [
-    'article',
-    '[role="article"]',
-    'main',
-    '.article-body', '.article-content', '.article__content', '.article-text',
-    '.post-content', '.post-body', '.post__content',
-    '.entry-content', '.entry-body',
-    '.story-body', '.story-content', '.story__body',
-    '.content-body', '.content-main', '.main-content',
-    '#article-body', '#article-content', '#content',
-    '.news-content', '.news-body', '.newsarticle',
-    '[itemprop="articleBody"]',
-    '.td-post-content', '.jeg_inner_content' // Popular theme selectors
-  ];
-
-  let contentElement = null;
-  for (const selector of contentSelectors) {
-    try {
-      contentElement = doc.querySelector(selector);
-      if (contentElement) break;
-    } catch (e) { /* ignore */ }
-  }
-
-  // Fallback: find the element with the most <p> tags
-  if (!contentElement) {
-    const allContainers = doc.querySelectorAll('div, section, article');
-    let maxScore = 0;
-    allContainers.forEach(container => {
-      const paragraphs = container.querySelectorAll('p');
-      let score = 0;
-      paragraphs.forEach(p => {
-        const text = p.textContent.trim();
-        if (text.length > 10) score += text.length; // Lower threshold
-      });
-      if (score > maxScore) {
-        maxScore = score;
-        contentElement = container;
-      }
-    });
-  }
-
-  if (!contentElement) {
-    contentElement = doc.body;
-  }
-
-  // Extract text from paragraphs - be very inclusive
-  const paragraphs = contentElement.querySelectorAll('p');
-  let text = '';
-  paragraphs.forEach(p => {
-    const pText = p.textContent.trim();
-    // Very low threshold to catch all content
-    if (pText.length > 10 && !pText.startsWith('©') && !pText.toLowerCase().includes('cookie') && !pText.toLowerCase().includes('subscribe')) {
-      text += pText + '\n\n';
-    }
-  });
-
-  // If limited paragraphs found, also try other text elements
-  if (text.length < 200) {
-    const otherElements = contentElement.querySelectorAll('div > span, li, blockquote');
-    otherElements.forEach(el => {
-      const elText = el.textContent.trim();
-      if (elText.length > 30 && !text.includes(elText)) {
-        text += elText + '\n\n';
-      }
-    });
-  }
-
-  // If still no paragraphs found, try getting all text and clean it up
-  if (!text.trim() || text.length < 100) {
-    // Get all text but filter out noise
-    const allText = contentElement.textContent
-      .replace(/\s+/g, ' ')
-      .replace(/\n+/g, ' ')
-      .trim();
-
-    // Split into sentences and rebuild as paragraphs
-    const sentences = allText.match(/[^.!?]+[.!?]+/g) || [];
-    const cleanSentences = sentences.filter(s =>
-      s.trim().length > 20 &&
-      !s.includes('cookie') &&
-      !s.includes('©')
-    );
-
-    if (cleanSentences.length > 2) {
-      text = cleanSentences.join(' ').replace(/\. /g, '.\n\n');
-    }
-  }
-
-  return text.trim() || null;
-}
-
-/**
- * Fetches and extracts article content from the original URL.
- * Uses our own proxy API first, then falls back to public CORS proxies.
- */
-async function fetchArticleContent(url) {
-  // First try our own proxy (most reliable when deployed to Vercel)
-  const ownProxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
-
-  // List of proxies to try (own proxy first, then public backups)
-  const proxies = [
-    { url: ownProxyUrl, name: 'Own Proxy' },
-    { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, name: 'AllOrigins' },
-    { url: `https://corsproxy.io/?${encodeURIComponent(url)}`, name: 'CorsProxy.io' },
-  ];
-
-  for (const proxy of proxies) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      const response = await fetch(proxy.url, {
-        signal: controller.signal,
-        headers: {
-          'Accept': 'text/html,application/xhtml+xml,application/xml'
-        }
-      });
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        console.log(`${proxy.name} failed with status: ${response.status}`);
-        continue;
-      }
-
-      const html = await response.text();
-
-      // Check if we got actual HTML content
-      if (!html || html.length < 500 || !html.includes('<')) {
-        console.log(`${proxy.name} returned invalid/empty content`);
-        continue;
-      }
-
-      const extracted = extractArticleText(html);
-
-      // Only return if we got meaningful content
-      if (extracted && extracted.length > 50) {
-        console.log(`✓ Successfully scraped via ${proxy.name} (${extracted.length} chars)`);
-        return extracted;
-      } else {
-        console.log(`${proxy.name} extracted insufficient content (${extracted?.length || 0} chars)`);
-      }
-    } catch (error) {
-      console.log(`${proxy.name} error:`, error.message);
-      continue;
-    }
-  }
-
-  console.log('All proxies failed for:', url);
-  return null;
-}
-
-/**
- * Clears any existing iframe from the read view and resets to normal mode.
- */
-function clearReadViewIframe() {
-  const readViewMain = document.querySelector('.read-view-main');
-  const existingWrapper = document.querySelector('.iframe-wrapper');
-
-  // Remove iframe wrapper if it exists
-  if (existingWrapper) {
-    existingWrapper.remove();
-  }
-
-  // Reset to normal text mode
-  readViewMain.classList.remove('iframe-mode');
-  readContent.style.display = '';
-  readOriginalLink.style.display = '';
-}
-
-/**
- * Renders an iframe as fallback when article scraping fails.
- * The iframe fits within the read view container without causing double scrollbars.
- */
-function renderIframeFallback(articleUrl) {
-  const readViewMain = document.querySelector('.read-view-main');
-  const readViewContent = document.querySelector('.read-view-content');
-
-  // Hide the text content area, image, and original link (iframe replaces them)
-  readContent.style.display = 'none';
-  readOriginalLink.style.display = 'none';
-  readImg.style.display = 'none'; // Hide image when iframe takes over
-
-  // Add iframe mode class for proper flexbox layout
-  readViewMain.classList.add('iframe-mode');
-
-  // Create iframe wrapper for proper height calculation
-  const iframeWrapper = document.createElement('div');
-  iframeWrapper.className = 'iframe-wrapper';
-
-  // Create the iframe element
-  const iframe = document.createElement('iframe');
-  iframe.className = 'read-view-iframe';
-  iframe.src = articleUrl;
-
-  // Security: sandbox with necessary permissions for content to load
-  // allow-same-origin: Required for many sites to function
-  // allow-scripts: Required for interactive content
-  // allow-popups: Allow links to open in new tabs
-  iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox';
-
-  // Accessibility and loading attributes
-  iframe.title = 'Article content';
-  iframe.loading = 'lazy';
-
-  // Append iframe to wrapper, then wrapper to content area
-  iframeWrapper.appendChild(iframe);
-  readViewContent.appendChild(iframeWrapper);
-}
+// Obsolete client-side scraping functions removed. 
+// We now use the server-side /api/read endpoint.
 
 async function openReadView(index) {
   const article = currentArticles[index];
   if (!article) return;
 
-  // Clear any existing iframe from previous article
-  clearReadViewIframe();
-
   // Show view immediately with loading state
   readTitle.textContent = article.title;
-  readContent.textContent = 'Loading full article...';
+  readContent.innerHTML = '<div class="spinner"></div><p style="text-align:center">Loading full article...</p>';
   readOriginalLink.href = article.link;
 
-  // Image handling - hide if no valid image
+  // Image handling
   const imageSrc = article.image_url;
   if (isValidImageUrl(imageSrc)) {
     readImg.src = imageSrc;
     readImg.style.display = 'block';
-    readImg.onerror = () => { readImg.style.display = 'none'; };
   } else {
     readImg.style.display = 'none';
   }
@@ -711,11 +433,13 @@ async function openReadView(index) {
   // Set source, author, and date
   readSource.textContent = article.source_id || 'Unknown Source';
 
-  // Author - NewsData.io provides 'creator' as an array
+  // Author handling
   const readAuthor = document.getElementById('read-author');
   const metaSeparator = document.querySelector('.meta-separator');
-  if (article.creator && article.creator.length > 0) {
-    readAuthor.textContent = article.creator.join(', ');
+  const creator = article.creator ? (Array.isArray(article.creator) ? article.creator.join(', ') : article.creator) : null;
+
+  if (creator) {
+    readAuthor.textContent = creator;
     readAuthor.style.display = '';
     if (metaSeparator) metaSeparator.style.display = '';
   } else {
@@ -730,29 +454,27 @@ async function openReadView(index) {
 
   readView.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
-
-  // Scroll to top of read view
   document.querySelector('.read-view-main').scrollTop = 0;
 
-  // Attempt to scrape full content
-  const scrapedContent = await fetchArticleContent(article.link);
+  try {
+    // Call our Reader API
+    const response = await fetch(`/api/read?url=${encodeURIComponent(article.link)}`);
+    const data = await response.json();
 
-  if (scrapedContent) {
-    // Scraping succeeded - show the scraped text content
-    readContent.textContent = scrapedContent;
-  } else {
-    // Scraping failed - show API content with prompt to read full article
-    const fallbackText = article.content || article.description || '';
-    const cleanText = fallbackText
-      .replace(/ONLY AVAILABLE IN PAID PLANS/gi, '')
-      .replace(/\[\+\d+ chars\]/gi, '')
-      .trim();
-
-    if (cleanText) {
-      readContent.textContent = cleanText + '\n\n📖 Tap the link below to read the full article.';
+    if (data.status === 'success' && data.content) {
+      // Inject clean HTML content
+      readContent.innerHTML = data.content;
     } else {
-      readContent.textContent = 'Full article content not available.\n\n📖 Tap the link below to read in your browser.';
+      throw new Error('Content extraction failed');
     }
+  } catch (err) {
+    console.error('Reader API error:', err);
+    // Fallback: show description
+    readContent.innerHTML = `
+      <p>${article.description || 'Summary not available.'}</p>
+      <br>
+      <p class="read-original">Unable to load full content. <a href="${article.link}" target="_blank">Read original article</a></p>
+    `;
   }
 }
 

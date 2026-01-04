@@ -16,6 +16,14 @@
             "dest": "/api/proxy.js"
         },
         {
+            "src": "/api/news",
+            "dest": "/api/news.js"
+        },
+        {
+            "src": "/api/read",
+            "dest": "/api/read.js"
+        },
+        {
             "src": "/rss/(.*)",
             "dest": "/api/rss.js?category=$1"
         },
