@@ -795,47 +795,57 @@ async function renderReadView(articleData) {
   document.querySelector('.read-view-main').scrollTop = 0;
 
   try {
-    // Call our Reader API
-    const response = await fetch(`/api/read?url=${encodeURIComponent(articleData.link)}`);
-    const data = await response.json();
+    // Call our Proxy API to get raw HTML, then scrape client-side
+    const response = await fetch(`/api/proxy?url=${encodeURIComponent(articleData.link)}`);
+    if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
+    const html = await response.text();
 
-    if (data.status === 'success') {
+    // Parse HTML string in browser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // Fix relative links in the parsed doc before extraction
+    const base = document.createElement('base');
+    base.href = new URL(articleData.link).origin;
+    doc.head.appendChild(base);
+
+    // Use Readability
+    // Ensure Readability is loaded
+    if (typeof Readability === 'undefined') {
+      throw new Error('Readability library not loaded');
+    }
+
+    const reader = new Readability(doc);
+    const article = reader.parse();
+
+    if (article && article.content) {
       // If we didn't have title/image before, update them now if available
-      if ((!articleData.title || articleData.title === 'Loading...') && data.title) {
-        readTitle.textContent = data.title;
+      if ((!articleData.title || articleData.title === 'Loading...') && article.title) {
+        readTitle.textContent = article.title;
       }
 
-      if (data.content) {
-        readContent.innerHTML = data.content;
+      readContent.innerHTML = article.content;
 
-        // --- Duplicate Image Fix ---
-        // Identify and hide the first image in content if it matches the header image
-        if (readImg.style.display !== 'none' && readImg.src) {
-          const contentImages = readContent.getElementsByTagName('img');
-          if (contentImages.length > 0) {
-            const firstImg = contentImages[0];
-            const headerUrl = readImg.src.split('?')[0];
-            const contentUrl = firstImg.src.split('?')[0];
+      // --- Duplicate Image Fix ---
+      // Identify and hide the first image in content if it matches the header image
+      if (readImg.style.display !== 'none' && readImg.src) {
+        const contentImages = readContent.getElementsByTagName('img');
+        if (contentImages.length > 0) {
+          const firstImg = contentImages[0];
+          const headerUrl = readImg.src.split('?')[0];
+          const contentUrl = firstImg.src.split('?')[0];
+          const headerFile = headerUrl.split('/').pop();
+          const contentFile = contentUrl.split('/').pop();
 
-            // Check for exact match or filename match
-            const headerFile = headerUrl.split('/').pop();
-            const contentFile = contentUrl.split('/').pop();
-
-            if (headerUrl === contentUrl || (headerFile && contentFile && headerFile === contentFile)) {
-              // Hide the duplicate image
-              firstImg.style.display = 'none';
-              // Also hide parent wrapper if it's just a wrapper (figure/p)
-              const parent = firstImg.parentElement;
-              if (parent && (parent.tagName === 'FIGURE' || (parent.tagName === 'P' && parent.innerText.trim().length < 5))) {
-                parent.style.display = 'none';
-              }
-              console.log('Removed duplicate hero image from content');
+          if (headerUrl === contentUrl || (headerFile && contentFile && headerFile === contentFile)) {
+            firstImg.style.display = 'none';
+            const parent = firstImg.parentElement;
+            if (parent && (parent.tagName === 'FIGURE' || (parent.tagName === 'P' && parent.innerText.trim().length < 5))) {
+              parent.style.display = 'none';
             }
+            console.log('Removed duplicate hero image from content');
           }
         }
-
-      } else {
-        throw new Error('No content returned');
       }
     } else {
       throw new Error('Content extraction failed');
