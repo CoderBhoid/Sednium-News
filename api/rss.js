@@ -54,7 +54,8 @@ export default async function handler(req, res) {
     const rss = generateRss(articles, displayCategory);
 
     res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
+    // Cache for 1 hour (3600 seconds) as requested
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600');
     res.status(200).send(rss);
 }
 
@@ -71,9 +72,6 @@ function generateRss(articles, categoryName) {
     });
 
     const items = uniqueArticles.map(article => {
-        const title = escapeXml(article.title || 'Untitled');
-        const link = escapeXml(article.link || '');
-        const description = escapeXml(article.description || article.content || 'No description available.');
         const title = article.title || 'Untitled';
         const description = article.description || article.content || 'No description available.';
         const pubDate = toRfc822Date(article.pubDate);
@@ -112,6 +110,7 @@ function generateRss(articles, categoryName) {
     <description>Latest ${categoryName} news from Sednium.</description>
     <language>en</language>
     <lastBuildDate>${now}</lastBuildDate>
+    <ttl>60</ttl>
     <generator>Sednium RSS Generator</generator>
     <image>
         <url>${SITE_URL}/assets/logolight.png</url>
