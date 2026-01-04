@@ -460,7 +460,7 @@ categoryButtons.forEach(btn => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Sednium News Script v1.5.1 Loaded [DEBUG BUILD]');
+  console.log('Sednium News Script v1.5.2-debug Loaded');
   console.log('DOM loaded, setting initial state');
   /* ========== SETTINGS LOGIC ========== */
 
@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Use try-catch for safety
     let saved = [];
     try {
-      saved = JSON.parse(localStorage.getItem('savedArticles') || '[]');
+      saved = getBookmarks(); // Use the shared helper function with correct key
     } catch (e) {
       console.error('Error parsing saved articles', e);
       saved = [];
@@ -914,7 +914,7 @@ async function openReadView(index) {
   });
 
   // *** CRITICAL FIX: Update Bookmark Button State ***
-  const bookmarks = JSON.parse(localStorage.getItem('savedArticles') || '[]');
+  const bookmarks = getBookmarks(); // Use shared helper
   const isBookmarked = bookmarks.some(b => b.link === article.link);
   // Log bookmark state
   console.log('Article is bookmarked:', isBookmarked);
