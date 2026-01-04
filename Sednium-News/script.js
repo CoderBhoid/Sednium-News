@@ -186,24 +186,21 @@ function setCategoryInUrl(category) {
 }
 
 function setActiveCategory(category) {
-  console.log('Setting active category:', category);
-  let found = false;
+  // console.log('Setting active category:', category);
   categoryButtons.forEach(btn => {
+    // If category is null, we just remove active from everything
+    if (!category) {
+      btn.classList.remove('active');
+      return;
+    }
     const isActive = btn.getAttribute('data-category') === category;
     btn.classList.toggle('active', isActive);
-    if (isActive) {
-      console.log('Activated button:', btn.textContent, btn.getAttribute('data-category'));
-      found = true;
-    }
   });
-  if (!found && category) {
-    console.warn(`No button found for category: ${category}`);
-    const fallbackButton = document.querySelector('button[data-category="top"]');
-    if (fallbackButton) {
-      fallbackButton.classList.add('active');
-      console.log('Fallback: Activated Headlines button');
-    }
-  }
+
+  // If we are in saved mode (category null), don't set fallback
+  if (!category) return;
+
+  // Logic for fallback highlight if needed...
 }
 
 function formatDate(dateStr) {
@@ -615,22 +612,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  if (settingsBtn && settingsModal) {
-    settingsBtn.addEventListener('click', () => {
+  if (settingsBtn) {
+    // defined above
+    settingsBtn.onclick = function (e) {
+      e.preventDefault();
       openSettings();
-    });
+    };
+  }
 
-    closeSettingsBtn.addEventListener('click', () => {
-      closeSettings();
-    });
-
-    // Close on outside click
-    // If settings modal is open, close it on outside click
-    settingsModal.addEventListener('click', (e) => {
+  if (settingsModal) {
+    settingsModal.onclick = function (e) {
       if (e.target === settingsModal) {
         closeSettings();
       }
-    });
+    };
+
+    closeSettingsBtn.onclick = function () {
+      closeSettings();
+    };
   }
 
   // --- Saved Tab Logic ---

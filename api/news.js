@@ -4,18 +4,18 @@ import Parser from 'rss-parser';
 // Note: We use public RSS feeds.
 // RSS Feed sources by category
 // Note: We use public RSS feeds.
-const FEEDS = {
+const RSS_FEEDS = {
     top: [
         'http://feeds.bbci.co.uk/news/rss.xml',
-        'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', // NYT Global
-        'https://www.theguardian.com/world/rss', // The Guardian
-        'http://rss.cnn.com/rss/edition.rss',
-        'https://www.aljazeera.com/xml/rss/all.xml',
-        'https://feeds.reuters.com/reuters/topNews'
+        'https://rss.cnn.com/rss/edition.rss',
+        'https://www.reutersagency.com/feed/?best-topics=political-general&post_type=best',
+        'https://www.theguardian.com/world/rss',
+        'https://feeds.washingtonpost.com/rss/world',
+        'https://www.cnbc.com/id/100003114/device/rss/rss.html'
     ],
     technology: [
+        'https://feeds.feedburner.com/TechCrunch',
         'https://www.theverge.com/rss/index.xml',
-        'https://techcrunch.com/feed/',
         'https://www.wired.com/feed/rss',
         'https://arstechnica.com/feed/',
         'https://www.engadget.com/rss.xml'
