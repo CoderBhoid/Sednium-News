@@ -13,6 +13,7 @@ const categoryButtons = document.querySelectorAll('.category-buttons button:not(
 const themeToggle = document.getElementById('themeToggle');
 
 let isLoading = false;
+let isBookmarksView = false;
 
 // Curated fallback images from Unsplash for each category (multiple options for variety)
 const categoryImages = {
@@ -650,6 +651,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedBtn = document.getElementById('saved-btn');
 
   function loadSavedArticles() {
+    isBookmarksView = true; // SET FLAG
+
     // Use try-catch for safety
     let saved = [];
     try {
@@ -757,6 +760,52 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- RSS Feeds Population ---
+  function populateRssList() {
+    const container = document.getElementById('settings-rss-list');
+    if (!container) return;
+
+    const baseUrl = window.location.origin;
+    const categories = ['Top', 'Technology', 'Sports', 'Business', 'Entertainment', 'Science', 'Health'];
+
+    container.innerHTML = '';
+
+    categories.forEach(cat => {
+      const catSlug = cat.toLowerCase();
+      const rssUrl = `${baseUrl}/api/rss?category=${catSlug}`;
+
+      const div = document.createElement('div');
+      div.className = 'rss-item';
+      div.innerHTML = `
+            <span>${cat}</span>
+            <button class="rss-copy-btn" data-url="${rssUrl}">Copy Link</button>
+          `;
+
+      div.querySelector('button').addEventListener('click', function (e) {
+        const url = this.getAttribute('data-url');
+        navigator.clipboard.writeText(url).then(() => {
+          const originalTextInput = this.textContent;
+          this.textContent = 'Copied!';
+          this.style.borderColor = 'green';
+          this.style.color = 'green';
+          setTimeout(() => {
+            this.textContent = originalTextInput;
+            this.style.borderColor = '';
+            this.style.color = '';
+          }, 2000);
+        }).catch(err => {
+          console.error('Copy failed', err);
+          alert('Copy failed: ' + url);
+        });
+      });
+
+      container.appendChild(div);
+    });
+  }
+
+  // Call it on load
+  populateRssList();
+
   console.log('Initial mode:', mode, 'value:', value);
   if (mode === 'category') {
     setActiveCategory(value); // Ensure "Headlines" (top) is active by default
@@ -782,6 +831,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateBottomNav('nav-home');
       setCategoryInUrl('top');
       setActiveCategory('top');
+      isBookmarksView = false; // RESET FLAG
       fetchNews(true);
     });
   }
