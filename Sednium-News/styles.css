@@ -326,6 +326,7 @@ body.dark-mode #apply-filters {
   margin: 0 1rem 1rem;
   color: var(--accent-color);
   display: -webkit-box;
+  line-clamp: 3;
   -webkit-line-clamp: 3;
   /* Limit to 3 lines (~20-25 words) */
   -webkit-box-orient: vertical;
@@ -527,9 +528,8 @@ body.dark-mode .search-wrapper {
 }
 
 /* Category Input Styling (now handled by .controls input) */
-.categoryInput {
-  /* Kept for legacy reference or specificity overrides if needed */
-}
+/* Category Input Styling (now handled by .controls input) */
+/* .categoryInput removed empty ruleset */
 
 /* Category Buttons Container */
 .category-buttons {
@@ -1138,6 +1138,7 @@ body.dark-mode .categoryInput {
   line-height: 1.3;
   margin: 0 0 0.25rem 0;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -1243,6 +1244,7 @@ body.dark-mode .read-original {
 
   .related-card-title {
     font-size: 0.75rem;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
   }
 
@@ -1319,6 +1321,7 @@ body.dark-mode .read-original {
   background: #e0e0e0;
   border-radius: 5px;
   outline: none;
+  appearance: none;
   -webkit-appearance: none;
 }
 
