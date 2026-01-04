@@ -520,44 +520,52 @@ body.dark-mode .search-wrapper {
   min-width: 0;
 }
 
+/* Category Input Styling (now handled by .controls input) */
 .categoryInput {
-  /* Overridden by .controls input above */
+  /* Kept for legacy reference or specificity overrides if needed */
 }
 
-text-align: center;
-transition: .3s ease-in;
-}
-
+/* Category Buttons Container */
 .category-buttons {
-  margin: auto;
+  margin: 0 auto;
   text-align: center;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
   padding: 1rem;
-  transition: 0.5s ease-out;
+  width: 100%;
+  max-width: 800px;
 }
 
-.category-buttons buttons {
-  flex: 1 0 120px;
-  min-width: 120px;
-  max-width: 150px;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
+.category-buttons button {
+  flex: 1 1 auto;
+  /* Allow grow and shrink */
+  min-width: 100px;
+  max-width: 160px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
   text-align: center;
-  border-radius: 8px;
-  border: none;
-  background-color: #fff;
-  color: #000;
-  white-space: nowrap;
-  /* Prevents text from wrapping */
-  transition: 0.3s ease-in;
+  border-radius: 20px;
+  /* More pill-like */
+  border: 1px solid var(--accent-color);
+  /* Add border for visibility */
+  background-color: var(--bg-color-light);
+  color: var(--text-color-light);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.category-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .copyright {
   text-align: center;
-  font-size: 5px;
+  font-size: 0.8rem;
+  opacity: 0.5;
+  margin-bottom: 1rem;
 }
 
 .card small {
@@ -568,29 +576,50 @@ transition: .3s ease-in;
 }
 
 nav button.active {
-  background: #000;
-  color: #fff;
-  border-radius: 15px;
-  transition: .3s ease-out;
+  background: var(--text-color-light);
+  color: var(--bg-color-light);
+  border-color: transparent;
+  transform: scale(1.05);
 }
 
-/* Settings Trigger (Replaces old Switch) */
+body.dark-mode nav button.active {
+  background: var(--text-color-dark);
+  color: var(--bg-color-dark);
+}
+
+/* Settings Trigger - Reset to sit in flow */
 .settings-trigger {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  border: 1px solid var(--accent-color);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  color: var(--text-color-light);
+  position: static;
+  /* Reset from absolute */
+  background: none;
+  border: none;
   cursor: pointer;
+  padding: 0.5rem;
+  color: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
-  transition: 0.3s;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  margin-left: 0.5rem;
+  /* Space from input */
+  width: 40px;
+  height: 40px;
+}
+
+right: 1rem;
+background: transparent;
+border: 1px solid var(--accent-color);
+width: 40px;
+height: 40px;
+border-radius: 50%;
+color: var(--text-color-light);
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0;
+transition: 0.3s;
 }
 
 .settings-trigger:hover {
