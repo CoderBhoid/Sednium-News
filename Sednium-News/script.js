@@ -593,6 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (settingsModal) {
       settingsModal.classList.add('visible');
       document.body.classList.add('modal-open');
+      document.body.style.overflow = 'hidden'; // Ensure scroll is locked
     }
   }
 
@@ -600,9 +601,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (settingsModal) {
       settingsModal.classList.remove('visible');
       document.body.classList.remove('modal-open');
+      document.body.style.overflow = ''; // Explicitly clear inline style
 
       // Force remove style if it stuck (safety)
       setTimeout(() => {
+        document.body.style.overflow = ''; // Double check
         if (!settingsModal.classList.contains('visible')) {
           settingsModal.style.pointerEvents = ''; // Reset inline if any
         }
@@ -632,9 +635,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedBtn = document.getElementById('saved-btn');
 
   function loadSavedArticles() {
-    const saved = JSON.parse(localStorage.getItem('savedArticles') || '[]');
+    // Use try-catch for safety
+    let saved = [];
+    try {
+      saved = JSON.parse(localStorage.getItem('savedArticles') || '[]');
+    } catch (e) {
+      console.error('Error parsing saved articles', e);
+      saved = [];
+    }
 
-    if (saved.length === 0) {
+    // Clear any existing articles first
+    newsContainer.innerHTML = '';
+
+    if (!saved || saved.length === 0) {
       newsContainer.innerHTML = '<div style="text-align:center; padding:3rem;"><p>No saved articles yet.</p><small>Bookmarked articles will appear here.</small></div>';
       currentArticles = [];
     } else {
@@ -652,15 +665,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (savedBtn) {
-    // Clone node to remove any potential old listeners if any stuck (though selector change fixes the main one)
-    // Actually, just nice clean listener:
+    // Use stopImmediatePropagation to ensure no other listeners fire
     savedBtn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Stop bubbling just in case
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
       setActiveCategory(null);
       loadSavedArticles();
     });
   }
-
   // --- Android Back Button Handling ---
   if (window.Capacitor) {
     const App = window.Capacitor.Plugins.App;
