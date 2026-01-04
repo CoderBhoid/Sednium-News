@@ -39,7 +39,42 @@
     </p>
     <nav>
       <div class="controls">
-        <input id="categoryInput" class="categoryInput" align="center" type="text" placeholder="Search news..." />
+        <div class="search-wrapper">
+          <input id="categoryInput" class="categoryInput" align="center" type="text" placeholder="Search news..." />
+        </div>
+        <div class="feed-tools">
+          <button id="filter-btn" class="tool-btn" title="Filter Sources">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </button>
+          <button id="sort-btn" class="tool-btn" title="Sort Order">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Modal (Small Popover) -->
+      <div id="filter-modal" class="tool-modal hidden">
+        <h4>Filter Sources</h4>
+        <div id="source-list" class="source-list">
+          <!-- Populated by JS -->
+        </div>
+        <button id="apply-filters">Apply</button>
+      </div>
+
+      <!-- Sort Modal (Small Popover) -->
+      <div id="sort-modal" class="tool-modal hidden">
+        <h4>Sort Order</h4>
+        <div class="sort-options">
+          <label><input type="radio" name="sortOrder" value="variety" checked> Variety (Default)</label>
+          <label><input type="radio" name="sortOrder" value="latest"> Newest First</label>
+        </div>
       </div>
       <div class="category-buttons">
         <button id="top" data-category="top">Headlines</button>
@@ -115,7 +150,6 @@
   </div>
 
   <div id="read-view" class="hidden">
-    <!-- Read View Content similar to before -->
     <div class="read-view-header">
       <button id="back-btn" class="nav-btn">
         <span>← Back</span>
@@ -156,23 +190,6 @@
           <a id="read-original-link" href="#" target="_blank" class="read-original">Read full article at source →</a>
         </div>
       </div>
-      <aside class="related-articles">
-        <h3 class="related-title">More News</h3>
-        <div id="related-container"></div>
-      </aside>
-    </div>
-  </div>
-  <div id="read-view" class="hidden">
-    <!-- Read View Content similar to before -->
-    <div class="read-view-header">
-      <button id="back-btn" class="nav-btn">
-        <span>← Back</span>
-      </button>
-      <!-- ... -->
-    </div>
-    <!-- ... -->
-    <div class="read-view-body">
-      <!-- ... -->
       <aside class="related-articles">
         <h3 class="related-title">More News</h3>
         <div id="related-container"></div>

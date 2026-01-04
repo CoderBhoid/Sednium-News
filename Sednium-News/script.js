@@ -1,7 +1,10 @@
 // API_KEY removed - using local free API
 const API_KEY = null;
 let nextPageToken = null;
-let currentArticles = []; /* Store articles for read view */
+let currentArticles = []; /* Store visible articles */
+let allFetchedArticles = []; /* Store all fetched articles before filtering */
+let activeFilters = new Set(); /* Enabled sources */
+let currentSort = 'variety'; /* 'variety' or 'latest' */
 const newsContainer = document.getElementById('news-container');
 const loading = document.getElementById('loading');
 const input = document.getElementById('categoryInput');
@@ -238,7 +241,8 @@ async function fetchNews(reset = false) {
   if (reset) {
     nextPageToken = null;
     newsContainer.innerHTML = '';
-    currentArticles = []; /* Reset articles list */
+    currentArticles = [];
+    allFetchedArticles = [];
   }
 
   const { mode, value } = getSearchParams();
@@ -247,8 +251,7 @@ async function fetchNews(reset = false) {
   if (mode === 'category') {
     params.append('category', value);
   } else if (mode === 'search') {
-    // Basic search simulation
-    params.append('category', 'top'); // Search logic pending in backend
+    params.append('category', 'top'); // Search logic pending
   }
 
   // Use local API
@@ -256,59 +259,19 @@ async function fetchNews(reset = false) {
 
   try {
     const res = await fetch(url);
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
-    }
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
 
     if (data.status === 'success') {
       if (data.results && data.results.length > 0) {
-        for (const article of data.results) {
-          // Skip duplicate articles (same title already in feed)
-          const titleLower = (article.title || '').toLowerCase().trim();
-          const isDuplicate = currentArticles.some(
-            existing => (existing.title || '').toLowerCase().trim() === titleLower
-          );
-          if (isDuplicate) {
-            console.log('Skipping duplicate article:', article.title);
-            continue;
-          }
+        // Store raw results
+        allFetchedArticles = data.results;
 
-          let imageSrc = article.image_url;
-          if (!isValidImageUrl(imageSrc)) {
-            console.log('Using fallback image for:', article.title, 'image_url:', imageSrc);
-            // Use random category-specific fallback image for variety
-            imageSrc = getCategoryFallbackImage(mode === 'category' ? value : 'default');
-          }
+        // Setup UI
+        generateSourceFilters(allFetchedArticles);
+        applyFiltersAndSort();
 
-          currentArticles.push(article);
-          const articleIndex = currentArticles.length - 1;
-
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.style.cursor = 'pointer'; // Make card appear clickable
-          card.innerHTML = `
-            <img src="${imageSrc}" alt="${article.title}" loading="lazy">
-            <h2>${article.title}</h2>
-            <small>By ${article.source_id || 'Unknown Source'}</small>
-            <p>${article.description || 'No description available.'}</p>
-            <small>${formatDate(article.pubDate)}</small>
-          `;
-          // Click on card to open read view
-          card.addEventListener('click', () => {
-            console.log('Card clicked! Index:', articleIndex);
-            try {
-              openReadView(articleIndex);
-            } catch (e) {
-              console.error('Error opening read view:', e);
-            }
-          });
-          newsContainer.appendChild(card);
-          requestAnimationFrame(() => {
-            card.classList.add('fade-in');
-          });
-        }
+        nextPageToken = data.nextPage || null;
       } else {
         const fallbackImage = getCategoryFallbackImage(mode === 'category' ? value : 'default');
         newsContainer.innerHTML = `
@@ -316,7 +279,6 @@ async function fetchNews(reset = false) {
           <img src="${fallbackImage}" alt="No news available" style="max-width: 100%;">
         `;
       }
-      nextPageToken = data.nextPage || null;
     } else {
       console.error('API error:', data);
       if (reset) newsContainer.innerHTML = `<p>Error: ${data.message || 'Failed to fetch news'}</p>`;
@@ -328,6 +290,101 @@ async function fetchNews(reset = false) {
     isLoading = false;
     loading.style.display = 'none';
   }
+}
+
+/**
+ * Extract unique sources and populate filter menu
+ */
+function generateSourceFilters(articles) {
+  const sources = new Set(articles.map(a => a.source_id || 'Unknown'));
+  const list = document.getElementById('source-list');
+  if (!list) return;
+
+  list.innerHTML = '';
+
+  // Sort sources alphabetically
+  Array.from(sources).sort().forEach(source => {
+    const div = document.createElement('div');
+    div.className = 'source-item';
+    // By default check all if activeFilters is empty, else check if in set
+    const isChecked = activeFilters.size === 0 || activeFilters.has(source);
+
+    div.innerHTML = `
+            <input type="checkbox" value="${source}" ${isChecked ? 'checked' : ''}>
+            <span>${source}</span>
+        `;
+
+    div.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'INPUT') {
+        const checkbox = div.querySelector('input');
+        checkbox.checked = !checkbox.checked;
+      }
+      // Update immediately on click? Or wait for Apply button?
+      // User requested "choose... provider", let's wait for Apply button for better UX on mobile
+    });
+
+    list.appendChild(div);
+  });
+}
+
+/**
+ * Filter and Sort articles then render
+ */
+function applyFiltersAndSort() {
+  let filtered = [...allFetchedArticles];
+
+  // Filter by Source
+  if (activeFilters.size > 0) {
+    filtered = filtered.filter(a => activeFilters.has(a.source_id || 'Unknown'));
+  }
+
+  // Sort
+  if (currentSort === 'latest') {
+    filtered.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+  } else {
+    // 'variety' - Maintain API order (which is variety interleaved)
+    // No action needed as allFetchedArticles is already interleaved
+  }
+
+  renderArticles(filtered);
+}
+
+/**
+ * Render list of articles to the container
+ */
+function renderArticles(articles) {
+  const { mode, value } = getSearchParams();
+  newsContainer.innerHTML = '';
+  currentArticles = articles; // Update visible list
+
+  if (articles.length === 0) {
+    newsContainer.innerHTML = '<p style="text-align:center; padding: 2rem;">No articles match your filters.</p>';
+    return;
+  }
+
+  articles.forEach((article, index) => {
+    let imageSrc = article.image_url;
+    if (!isValidImageUrl(imageSrc)) {
+      // Use random category-specific fallback image for variety
+      imageSrc = getCategoryFallbackImage(mode === 'category' ? value : 'default');
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card fade-in';
+    card.style.cursor = 'pointer';
+    card.innerHTML = `
+            <img src="${imageSrc}" alt="${article.title}" loading="lazy">
+            <h2>${article.title}</h2>
+            <small>By ${article.source_id || 'Unknown Source'}</small>
+            <p>${article.description || 'No description available.'}</p>
+            <small>${formatDate(article.pubDate)}</small>
+          `;
+
+    card.addEventListener('click', () => {
+      openReadView(index);
+    });
+    newsContainer.appendChild(card);
+  });
 }
 
 input.addEventListener('keydown', e => {
@@ -482,6 +539,74 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // --- Feed Tools (Filter/Sort) ---
+  const filterBtn = document.getElementById('filter-btn');
+  const sortBtn = document.getElementById('sort-btn');
+  const filterModal = document.getElementById('filter-modal');
+  const sortModal = document.getElementById('sort-modal');
+  const applyFiltersBtn = document.getElementById('apply-filters');
+  const sortInputs = document.querySelectorAll('input[name="sortOrder"]');
+
+  function closeToolModals() {
+    if (filterModal) filterModal.classList.add('hidden');
+    if (sortModal) sortModal.classList.add('hidden');
+    if (filterBtn) filterBtn.classList.remove('active');
+    if (sortBtn) sortBtn.classList.remove('active');
+  }
+
+  if (filterBtn && filterModal) {
+    filterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = filterModal.classList.contains('hidden');
+      closeToolModals();
+      if (isHidden) {
+        filterModal.classList.remove('hidden');
+        filterBtn.classList.add('active');
+      }
+    });
+  }
+
+  if (sortBtn && sortModal) {
+    sortBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = sortModal.classList.contains('hidden');
+      closeToolModals();
+      if (isHidden) {
+        sortModal.classList.remove('hidden');
+        sortBtn.classList.add('active');
+      }
+    });
+  }
+
+  // Apply Filters
+  if (applyFiltersBtn) {
+    applyFiltersBtn.addEventListener('click', () => {
+      const checkboxes = document.querySelectorAll('#source-list input:checked');
+      activeFilters.clear();
+      checkboxes.forEach(cb => activeFilters.add(cb.value));
+      // If all unchecked, treated as "show all" (reset activeFilters to empty set effectively, or handle logic)
+      // To implement "show all if none selected", logic in applyFiltersAndSort handles activeFilters.size > 0
+      applyFiltersAndSort();
+      closeToolModals();
+    });
+  }
+
+  // Apply Sort
+  sortInputs.forEach(input => {
+    input.addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      applyFiltersAndSort();
+      closeToolModals();
+    });
+  });
+
+  // Close modals on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tool-modal') && !e.target.closest('.tool-btn')) {
+      closeToolModals();
+    }
+  });
 
   const { mode, value } = getSearchParams();
   const urlParams = new URLSearchParams(window.location.search);

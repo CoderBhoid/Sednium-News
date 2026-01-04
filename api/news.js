@@ -2,9 +2,10 @@ import Parser from 'rss-parser';
 
 // RSS Feed sources by category
 // Note: We use public RSS feeds.
+// RSS Feed sources by category
+// Note: We use public RSS feeds.
 const FEEDS = {
     top: [
-        'https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en', // Google News Top
         'http://feeds.bbci.co.uk/news/rss.xml',
         'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', // NYT Global
         'https://www.theguardian.com/world/rss', // The Guardian
@@ -13,7 +14,6 @@ const FEEDS = {
         'https://feeds.reuters.com/reuters/topNews'
     ],
     technology: [
-        'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=en-US&gl=US&ceid=US:en',
         'https://www.theverge.com/rss/index.xml',
         'https://techcrunch.com/feed/',
         'https://www.wired.com/feed/rss',
@@ -21,38 +21,32 @@ const FEEDS = {
         'https://www.engadget.com/rss.xml'
     ],
     sports: [
-        'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en',
         'https://www.espn.com/espn/rss/news',
         'http://feeds.bbci.co.uk/sport/rss.xml',
         'https://www.si.com/.rss/full/'
     ],
     business: [
-        'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-US&gl=US&ceid=US:en',
         'https://www.cnbc.com/id/100003114/device/rss/rss.html',
         'https://feeds.reuters.com/reuters/businessNews',
         'https://www.economist.com/business/rss.xml'
     ],
     entertainment: [
-        'https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=en-US&gl=US&ceid=US:en',
         'https://www.eonline.com/syndication/feeds/rssfeeds/topstories.xml',
         'https://variety.com/feed/',
         'https://www.hollywoodreporter.com/feed/'
     ],
     science: [
-        'https://news.google.com/rss/headlines/section/topic/SCIENCE?hl=en-US&gl=US&ceid=US:en',
         'https://www.nasa.gov/rss/dyn/breaking_news.rss', // NASA
         'https://www.sciencedaily.com/rss/top/science.xml',
         'https://rss.nytimes.com/services/xml/rss/nyt/Science.xml',
         'https://www.space.com/feeds/all'
     ],
     health: [
-        'https://news.google.com/rss/headlines/section/topic/HEALTH?hl=en-US&gl=US&ceid=US:en',
         'https://www.medicalnewstoday.com/feed',
         'http://rss.cnn.com/rss/cnn_health.rss',
         'https://www.nih.gov/news-events/feed.xml'
     ],
     world: [
-        'https://news.google.com/rss/headlines/section/topic/WORLD?hl=en-US&gl=US&ceid=US:en',
         'http://feeds.bbci.co.uk/news/world/rss.xml',
         'https://www.aljazeera.com/xml/rss/all.xml',
         'https://www.reuters.com/rssFeed/worldNews'
@@ -97,17 +91,24 @@ export default async function handler(req, res) {
 
         const results = await Promise.all(feedPromises);
 
-        // Flatten array of arrays
-        const allArticles = results.flat();
+        // Round-Robin Interleaving for Variety
+        // Instead of sorting purely by date (which clumps sources), we pick 1 from each feed in turns.
+        const allArticles = [];
+        const maxLength = Math.max(...results.map(r => r.length));
 
-        // Sort by date (newest first)
-        allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        for (let i = 0; i < maxLength; i++) {
+            for (const feedResults of results) {
+                if (feedResults[i]) {
+                    allArticles.push(feedResults[i]);
+                }
+            }
+        }
 
         // Format to match old NewsData.io structure expected by frontend
         const responseData = {
             status: 'success',
             totalResults: allArticles.length,
-            results: allArticles.slice(0, 40) // Limit to 40 items for performance
+            results: allArticles.slice(0, 50) // Limit to 50 items (increased from 40 for variety)
         };
 
         res.setHeader('Content-Type', 'application/json');

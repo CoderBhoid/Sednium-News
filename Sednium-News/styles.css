@@ -95,6 +95,143 @@ body.dark nav button.active {
   color: var(--bg-color-dark);
 }
 
+/* Controls Container */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 1rem;
+}
+
+.search-wrapper {
+  flex: 1;
+}
+
+#categoryInput {
+  width: 100%;
+}
+
+.feed-tools {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tool-btn {
+  background: transparent;
+  border: 1px solid var(--accent-color);
+  color: var(--text-color-light);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  /* Circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tool-btn:hover,
+.tool-btn.active {
+  background: var(--text-color-light);
+  color: var(--bg-color-light);
+}
+
+body.dark-mode .tool-btn {
+  color: var(--text-color-dark);
+}
+
+body.dark-mode .tool-btn:hover,
+body.dark-mode .tool-btn.active {
+  background: var(--text-color-dark);
+  color: var(--bg-color-dark);
+}
+
+/* Tool Modals (Popovers) */
+.tool-modal {
+  position: absolute;
+  top: 140px;
+  /* Below header roughly */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-color-light);
+  border: 1px solid var(--accent-color);
+  padding: 1rem;
+  border-radius: 12px;
+  z-index: 1000;
+  width: 280px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+body.dark-mode .tool-modal {
+  background: #1a1a1a;
+  border-color: #444;
+}
+
+.tool-modal h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  padding-bottom: 0.5rem;
+}
+
+/* Filter List */
+.source-list {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.source-item input {
+  accent-color: #ff8c00;
+}
+
+#apply-filters {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--text-color-light);
+  color: var(--bg-color-light);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+body.dark-mode #apply-filters {
+  background: var(--text-color-dark);
+  color: var(--bg-color-dark);
+}
+
+/* Sort Options */
+.sort-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sort-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
 #categoryInput:focus {
   outline: none;
   border-color: var(--text-color-light);
