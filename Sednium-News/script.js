@@ -8,7 +8,8 @@ let currentSort = 'variety'; /* 'variety' or 'latest' */
 const newsContainer = document.getElementById('news-container');
 const loading = document.getElementById('loading');
 const input = document.getElementById('categoryInput');
-const categoryButtons = document.querySelectorAll('nav button');
+// Select only category buttons, explicitly treating Settings and Saved button separately to prevent conflicts
+const categoryButtons = document.querySelectorAll('.category-buttons button:not(#saved-btn)');
 const themeToggle = document.getElementById('themeToggle');
 
 let isLoading = false;
@@ -632,9 +633,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadSavedArticles() {
     const saved = JSON.parse(localStorage.getItem('savedArticles') || '[]');
-    // Reverse to show newest saved first? Or keep order.
-    // Usually LIFO (Stack) is better for "Saved".
-    renderArticles(saved.reverse());
+
+    if (saved.length === 0) {
+      newsContainer.innerHTML = '<div style="text-align:center; padding:3rem;"><p>No saved articles yet.</p><small>Bookmarked articles will appear here.</small></div>';
+      currentArticles = [];
+    } else {
+      renderArticles(saved.reverse());
+    }
 
     // Update active state
     if (categoryButtons) {
@@ -642,14 +647,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (savedBtn) savedBtn.classList.add('active');
 
-    // Set URL param to 'saved' (optional, or just clear category)
-    // setCategoryInUrl('saved'); // If we want to persist refreshing on saved tab
+    // Remove sorting/filtering for Saved view as it's a custom list
+    activeFilters.clear();
   }
 
   if (savedBtn) {
-    savedBtn.addEventListener('click', () => {
-      setActiveCategory(null); // Clear other highlights
-      // Don't call fetchNews!
+    // Clone node to remove any potential old listeners if any stuck (though selector change fixes the main one)
+    // Actually, just nice clean listener:
+    savedBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Stop bubbling just in case
+      setActiveCategory(null);
       loadSavedArticles();
     });
   }
