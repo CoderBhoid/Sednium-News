@@ -690,6 +690,71 @@ const readSource = document.getElementById('read-source');
 const readContent = document.getElementById('read-content');
 const readOriginalLink = document.getElementById('read-original-link');
 const relatedContainer = document.getElementById('related-container');
+const listenBtn = document.getElementById('listen-btn');
+
+let ttsSpeaking = false;
+let currentUtterance = null;
+
+function stopTTS() {
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+    ttsSpeaking = false;
+    updateListenButtonState();
+  }
+}
+
+function updateListenButtonState() {
+  if (!listenBtn) return;
+  const icon = listenBtn.querySelector('svg');
+  if (ttsSpeaking) {
+    listenBtn.classList.add('active'); // Add styling for active state if needed
+    // Stop Icon
+    icon.innerHTML = '<rect x="4" y="4" width="16" height="16"></rect>';
+  } else {
+    listenBtn.classList.remove('active');
+    // Headphones Icon
+    icon.innerHTML = '<path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>';
+  }
+}
+
+function toggleTTS() {
+  if (!window.speechSynthesis) {
+    alert("Text-to-Speech not supported on this device.");
+    return;
+  }
+
+  if (window.speechSynthesis.speaking || ttsSpeaking) {
+    stopTTS();
+    return;
+  }
+
+  // Start Speaking
+  const text = readContent.innerText;
+  if (!text || text.length < 10) return;
+
+  currentUtterance = new SpeechSynthesisUtterance(text);
+  currentUtterance.lang = 'en-US';
+  currentUtterance.rate = 1.0;
+
+  currentUtterance.onend = () => {
+    ttsSpeaking = false;
+    updateListenButtonState();
+  };
+
+  currentUtterance.onerror = (e) => {
+    console.error('TTS Error:', e);
+    ttsSpeaking = false;
+    updateListenButtonState();
+  };
+
+  window.speechSynthesis.speak(currentUtterance);
+  ttsSpeaking = true;
+  updateListenButtonState();
+}
+
+if (listenBtn) {
+  listenBtn.addEventListener('click', toggleTTS);
+}
 
 // We now use the server-side /api/read endpoint.
 
@@ -876,6 +941,10 @@ async function renderReadView(articleData) {
 function closeReadView() {
   readView.classList.add('hidden');
   document.body.style.overflow = '';
+  document.body.classList.remove('modal-open'); // Ensure global scroll lock is off
+
+  // Stop TTS if playing
+  stopTTS();
 }
 
 backBtn.addEventListener('click', closeReadView);
