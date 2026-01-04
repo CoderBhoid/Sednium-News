@@ -460,7 +460,7 @@ categoryButtons.forEach(btn => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Sednium News Script v1.6.1-mobile-fix Loaded');
+  console.log('Sednium News Script v1.6.2-scope-fix Loaded');
   console.log('DOM loaded, setting initial state');
   /* ========== SETTINGS LOGIC ========== */
 
@@ -588,171 +588,233 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Modal Handling ---
+  // --- Modal Handling (Simplified) ---
   function openSettings() {
     if (settingsModal) {
-      settingsModal.classList.add('visible');
-      document.body.classList.add('modal-open');
-      document.body.style.overflow = 'hidden'; // Ensure scroll is locked
+      console.log('Opening Settings Modal');
+      settingsModal.classList.remove('hidden'); // Ensure not hidden
+      settingsModal.classList.add('visible'); // Fade in
+      document.body.classList.add('modal-open'); // Lock scroll
     }
   }
 
   function closeSettings() {
     if (settingsModal) {
+      console.log('Closing Settings Modal');
       settingsModal.classList.remove('visible');
-      document.body.classList.remove('modal-open');
-      document.body.style.overflow = ''; // Explicitly clear inline style
-
-      // Force remove style if it stuck (safety)
       setTimeout(() => {
-        document.body.style.overflow = ''; // Double check
         if (!settingsModal.classList.contains('visible')) {
-          settingsModal.style.pointerEvents = ''; // Reset inline if any
+          settingsModal.classList.add('hidden');
         }
       }, 300);
+      document.body.classList.remove('modal-open');
     }
   }
+  if (settingsModal) {
+    settingsModal.classList.remove('visible');
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = ''; // Explicitly clear inline style
+
+    // Force remove style if it stuck (safety)
+    setTimeout(() => {
+      document.body.style.overflow = ''; // Double check
+      if (!settingsModal.classList.contains('visible')) {
+        settingsModal.style.pointerEvents = ''; // Reset inline if any
+      }
+    }, 300);
+  }
+}
 
   if (settingsBtn) {
-    // defined above
-    settingsBtn.onclick = function (e) {
-      console.log('Settings button clicked');
-      e.preventDefault();
-      openSettings();
-    };
-  }
+  // defined above
+  settingsBtn.onclick = function (e) {
+    console.log('Settings button clicked');
+    e.preventDefault();
+    openSettings();
+  };
+}
 
-  if (settingsModal) {
-    settingsModal.onclick = function (e) {
-      if (e.target === settingsModal) {
-        closeSettings();
-      }
-    };
-
-    closeSettingsBtn.onclick = function () {
+if (settingsModal) {
+  settingsModal.onclick = function (e) {
+    if (e.target === settingsModal) {
       closeSettings();
-    };
-  }
-
-  // --- Saved Tab Logic ---
-  const savedBtn = document.getElementById('saved-btn');
-
-  function loadSavedArticles() {
-    // Use try-catch for safety
-    let saved = [];
-    try {
-      saved = getBookmarks(); // Use the shared helper function with correct key
-    } catch (e) {
-      console.error('Error parsing saved articles', e);
-      saved = [];
     }
+  };
 
-    // Clear any existing articles first
-    newsContainer.innerHTML = '';
+  closeSettingsBtn.onclick = function () {
+    closeSettings();
+  };
+}
 
-    if (!saved || saved.length === 0) {
-      newsContainer.innerHTML = '<div style="text-align:center; padding:3rem;"><p>No saved articles yet.</p><small>Bookmarked articles will appear here.</small></div>';
-      currentArticles = [];
-    } else {
-      renderArticles(saved.reverse());
-    }
+// --- Saved Tab Logic ---
+const savedBtn = document.getElementById('saved-btn');
 
-    // Update active state
-    if (categoryButtons) {
-      categoryButtons.forEach(btn => btn.classList.remove('active'));
-    }
-    if (savedBtn) savedBtn.classList.add('active');
-
-    // Remove sorting/filtering for Saved view as it's a custom list
-    activeFilters.clear();
+function loadSavedArticles() {
+  // Use try-catch for safety
+  let saved = [];
+  try {
+    saved = getBookmarks(); // Use the shared helper function with correct key
+  } catch (e) {
+    console.error('Error parsing saved articles', e);
+    saved = [];
   }
 
-  if (savedBtn) {
-    // Use stopImmediatePropagation to ensure no other listeners fire
-    savedBtn.addEventListener('click', (e) => {
-      console.log('Saved button clicked');
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
+  // Clear any existing articles first
+  newsContainer.innerHTML = '';
 
-      setActiveCategory(null);
-      loadSavedArticles();
-    });
-  }
-  // --- Android Back Button Handling ---
-  if (window.Capacitor) {
-    const App = window.Capacitor.Plugins.App;
-
-    App.addListener('backButton', ({ canGoBack }) => {
-      // Priority 1: Close Settings Modal
-      if (settingsModal && settingsModal.classList.contains('visible')) {
-        closeSettings();
-        return;
-      }
-
-      // Priority 2: Close Read View
-      if (readView && !readView.classList.contains('hidden')) {
-        closeReadView();
-        return;
-      }
-
-      // Priority 3: Apps usually minimize or exit
-      App.exitApp();
-    });
+  if (!saved || saved.length === 0) {
+    newsContainer.innerHTML = '<div style="text-align:center; padding:3rem;"><p>No saved articles yet.</p><small>Bookmarked articles will appear here.</small></div>';
+    currentArticles = [];
+  } else {
+    renderArticles(saved.reverse());
   }
 
-  // --- Feed Tools (Sort/Filter in Settings) ---
-
-  // Sort Buttons Logic
-  const sortButtons = document.querySelectorAll('.sort-group button');
-
-  function applySortUI(sortMode) {
-    sortButtons.forEach(btn => btn.classList.remove('active'));
-    const active = document.querySelector(`.sort-group button[data-sort="${sortMode}"]`);
-    if (active) active.classList.add('active');
+  // Update active state
+  if (categoryButtons) {
+    categoryButtons.forEach(btn => btn.classList.remove('active'));
   }
+  if (savedBtn) savedBtn.classList.add('active');
 
-  // Init Sort UI
-  applySortUI(currentSort);
+  // Remove sorting/filtering for Saved view as it's a custom list
+  activeFilters.clear();
+}
 
-  sortButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentSort = btn.getAttribute('data-sort');
-      applySortUI(currentSort);
-      applyFiltersAndSort();
-    });
-  });
+if (savedBtn) {
+  // Use stopImmediatePropagation to ensure no other listeners fire
+  savedBtn.addEventListener('click', (e) => {
+    console.log('Saved button clicked');
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
 
-  // Close modals on outside click
-  document.addEventListener('click', (e) => {
-    // If settings modal is open, close it on outside click
-    if (!settingsModal.classList.contains('hidden') && !e.target.closest('#settings-modal') && !e.target.closest('#settings-trigger')) {
-      settingsModal.classList.add('hidden');
-    }
-  });
-
-  const { mode, value } = getSearchParams();
-  const urlParams = new URLSearchParams(window.location.search);
-  const readUrl = urlParams.get('read');
-
-  if (readUrl) {
-    // Deep link to reader mode
-    console.log('Deep link detected:', readUrl);
-    renderReadView({
-      link: readUrl,
-      title: 'Loading Article...',
-      source_id: 'External Link'
-    });
-  }
-
-  console.log('Initial mode:', mode, 'value:', value);
-  if (mode === 'category') {
-    setActiveCategory(value); // Ensure "Headlines" (top) is active by default
-  } else if (mode === 'search') {
-    input.value = value;
     setActiveCategory(null);
+    loadSavedArticles();
+  });
+}
+// --- Android Back Button Handling ---
+if (window.Capacitor) {
+  const App = window.Capacitor.Plugins.App;
+
+  App.addListener('backButton', ({ canGoBack }) => {
+    // Priority 1: Close Settings Modal
+    if (settingsModal && settingsModal.classList.contains('visible')) {
+      closeSettings();
+      return;
+    }
+
+    // Priority 2: Close Read View
+    if (readView && !readView.classList.contains('hidden')) {
+      closeReadView();
+      return;
+    }
+
+    // Priority 3: Apps usually minimize or exit
+    App.exitApp();
+  });
+}
+
+// --- Feed Tools (Sort/Filter in Settings) ---
+
+// Sort Buttons Logic
+const sortButtons = document.querySelectorAll('.sort-group button');
+
+function applySortUI(sortMode) {
+  sortButtons.forEach(btn => btn.classList.remove('active'));
+  const active = document.querySelector(`.sort-group button[data-sort="${sortMode}"]`);
+  if (active) active.classList.add('active');
+}
+
+// Init Sort UI
+applySortUI(currentSort);
+
+sortButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentSort = btn.getAttribute('data-sort');
+    applySortUI(currentSort);
+    applyFiltersAndSort();
+  });
+});
+
+// Close modals on outside click
+document.addEventListener('click', (e) => {
+  // If settings modal is open, close it on outside click
+  if (!settingsModal.classList.contains('hidden') && !e.target.closest('#settings-modal') && !e.target.closest('#settings-trigger')) {
+    settingsModal.classList.add('hidden');
   }
-  fetchNews(true);
+});
+
+const { mode, value } = getSearchParams();
+const urlParams = new URLSearchParams(window.location.search);
+const readUrl = urlParams.get('read');
+
+if (readUrl) {
+  // Deep link to reader mode
+  console.log('Deep link detected:', readUrl);
+  renderReadView({
+    link: readUrl,
+    title: 'Loading Article...',
+    source_id: 'External Link'
+  });
+}
+
+console.log('Initial mode:', mode, 'value:', value);
+if (mode === 'category') {
+  setActiveCategory(value); // Ensure "Headlines" (top) is active by default
+} else if (mode === 'search') {
+  input.value = value;
+  setActiveCategory(null);
+}
+// ========== BOTTOM NAVIGATION (Refactored) ==========
+const navHome = document.getElementById('nav-home');
+const navSaved = document.getElementById('nav-saved');
+const navSettings = document.getElementById('nav-settings');
+const bottomNavItems = document.querySelectorAll('.nav-item');
+
+function updateBottomNav(activeId) {
+  bottomNavItems.forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(activeId);
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+// Hook into internal functions directly since we are now in scope
+if (navHome) {
+  navHome.addEventListener('click', () => {
+    updateBottomNav('nav-home');
+    setCategoryInUrl('top');
+    setActiveCategory('top');
+    fetchNews(true);
+  });
+}
+
+if (navSaved) {
+  navSaved.addEventListener('click', () => {
+    updateBottomNav('nav-saved');
+    loadSavedArticles(); // Now this works!
+  });
+}
+
+if (navSettings) {
+  navSettings.addEventListener('click', () => {
+    updateBottomNav('nav-settings');
+    openSettings();
+  });
+}
+
+// Override internal function logic if needed, or just rely on manual calls?
+// Since we are inside the closure, we can't easily "override" functions declared with 'function' keyword 
+// unless we change how they are called or if they were var/let/const.
+// But we can add listeners to the desktop buttons to also update bottom nav.
+
+if (savedBtn) {
+  savedBtn.addEventListener('click', () => {
+    updateBottomNav('nav-saved');
+  });
+}
+
+// When settings close, revert nav if needed?
+// Let's keep it simple for now.
+
+fetchNews(true);
 });
 
 window.addEventListener('scroll', () => {
@@ -1252,77 +1314,5 @@ document.body.addEventListener('touchend', (e) => {
   }
   isPulling = false;
 }, { passive: true });
-
-// ========== BOTTOM NAVIGATION (Mobile v1.6) ==========
-const navHome = document.getElementById('nav-home');
-const navSaved = document.getElementById('nav-saved');
-const navSettings = document.getElementById('nav-settings');
-const bottomNavItems = document.querySelectorAll('.nav-item');
-
-function updateBottomNav(activeId) {
-  bottomNavItems.forEach(btn => btn.classList.remove('active'));
-  const activeBtn = document.getElementById(activeId);
-  if (activeBtn) activeBtn.classList.add('active');
-}
-
-if (navHome) {
-  navHome.addEventListener('click', () => {
-    updateBottomNav('nav-home');
-    // Reset to top news
-    setCategoryInUrl('top');
-    setActiveCategory('top');
-    fetchNews(true);
-    isBookmarksView = false;
-  });
-}
-
-if (navSaved) {
-  navSaved.addEventListener('click', () => {
-    updateBottomNav('nav-saved');
-    loadSavedArticles();
-  });
-}
-
-if (navSettings) {
-  navSettings.addEventListener('click', () => {
-    // Settings doesn't change view, just opens modal
-    // Maybe keep previous active state? 
-    // Usually Settings is a modal, so we don't necessarily 'switch' tabs fully, but user wants it as a tab.
-    // Let's open settings and highlight tab.
-    updateBottomNav('nav-settings');
-    openSettings();
-  });
-}
-
-// Update Bottom Nav state based on other interactions
-// Hook into existing functions
-const originalLoadSaved = loadSavedArticles;
-loadSavedArticles = function () {
-  originalLoadSaved();
-  updateBottomNav('nav-saved');
-};
-
-const originalFetchNews = fetchNews;
-fetchNews = function (reset) {
-  originalFetchNews(reset);
-  // If we are fetching news, we are likely home (or a category)
-  // Check if saved view is active?
-  const savedBtn = document.getElementById('saved-btn');
-  if (savedBtn && !savedBtn.classList.contains('active')) {
-    updateBottomNav('nav-home');
-  }
-};
-
-// Also listen for settings close to revert nav state? 
-// User requested "Settings" as a layout items. 
-// If they close settings modal manually, should we revert nav to Home?
-// Let's assume yes for better UX.
-if (settingsModal) {
-  // Extend closeSettings to handle nav visual
-  const oldClose = closeSettings; // careful with scope if defined inside DOMContentLoaded
-  // Since closeSettings is inside DOMContentLoaded scope, we can't easily override it globally here at end of file.
-  // We will attach an observer or just leave it. 
-  // Simple fix: When modal closes, check if we are in saved view or home view.
-}
 
 // End of script logic
