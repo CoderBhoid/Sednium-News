@@ -4,46 +4,63 @@ import Parser from 'rss-parser';
 // Note: We use public RSS feeds.
 const FEEDS = {
     top: [
+        'https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en', // Google News Top
         'http://feeds.bbci.co.uk/news/rss.xml',
+        'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', // NYT Global
+        'https://www.theguardian.com/world/rss', // The Guardian
         'http://rss.cnn.com/rss/edition.rss',
         'https://www.aljazeera.com/xml/rss/all.xml',
         'https://feeds.reuters.com/reuters/topNews'
     ],
     technology: [
+        'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=en-US&gl=US&ceid=US:en',
         'https://www.theverge.com/rss/index.xml',
         'https://techcrunch.com/feed/',
         'https://www.wired.com/feed/rss',
-        'https://arstechnica.com/feed/'
+        'https://arstechnica.com/feed/',
+        'https://www.engadget.com/rss.xml'
     ],
     sports: [
+        'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en',
         'https://www.espn.com/espn/rss/news',
         'http://feeds.bbci.co.uk/sport/rss.xml',
-        'https://api.foxsports.com/v1/rss?partnerKey=zBaFxRyGKCfxBagJG9b8pqLyndmvo7UU'
+        'https://www.si.com/.rss/full/'
     ],
     business: [
+        'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-US&gl=US&ceid=US:en',
         'https://www.cnbc.com/id/100003114/device/rss/rss.html',
-        'https://feeds.reuters.com/reuters/businessNews'
+        'https://feeds.reuters.com/reuters/businessNews',
+        'https://www.economist.com/business/rss.xml'
     ],
     entertainment: [
+        'https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=en-US&gl=US&ceid=US:en',
         'https://www.eonline.com/syndication/feeds/rssfeeds/topstories.xml',
         'https://variety.com/feed/',
         'https://www.hollywoodreporter.com/feed/'
     ],
     science: [
+        'https://news.google.com/rss/headlines/section/topic/SCIENCE?hl=en-US&gl=US&ceid=US:en',
+        'https://www.nasa.gov/rss/dyn/breaking_news.rss', // NASA
         'https://www.sciencedaily.com/rss/top/science.xml',
-        'https://rss.nytimes.com/services/xml/rss/nyt/Science.xml'
+        'https://rss.nytimes.com/services/xml/rss/nyt/Science.xml',
+        'https://www.space.com/feeds/all'
     ],
     health: [
+        'https://news.google.com/rss/headlines/section/topic/HEALTH?hl=en-US&gl=US&ceid=US:en',
         'https://www.medicalnewstoday.com/feed',
-        'http://rss.cnn.com/rss/cnn_health.rss'
+        'http://rss.cnn.com/rss/cnn_health.rss',
+        'https://www.nih.gov/news-events/feed.xml'
     ],
     world: [
+        'https://news.google.com/rss/headlines/section/topic/WORLD?hl=en-US&gl=US&ceid=US:en',
         'http://feeds.bbci.co.uk/news/world/rss.xml',
-        'https://www.aljazeera.com/xml/rss/all.xml'
+        'https://www.aljazeera.com/xml/rss/all.xml',
+        'https://www.reuters.com/rssFeed/worldNews'
     ],
     politics: [
         'http://rss.cnn.com/rss/cnn_allpolitics.rss',
-        'https://feeds.reuters.com/reuters/politicsNews'
+        'https://feeds.reuters.com/reuters/politicsNews',
+        'https://www.politico.com/rss/politics08.xml'
     ]
 };
 
