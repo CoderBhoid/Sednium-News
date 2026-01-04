@@ -588,19 +588,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Modal Handling ---
+  function openSettings() {
+    if (settingsModal) {
+      settingsModal.classList.add('visible');
+      document.body.classList.add('modal-open');
+    }
+  }
+
+  function closeSettings() {
+    if (settingsModal) {
+      settingsModal.classList.remove('visible');
+      document.body.classList.remove('modal-open');
+    }
+  }
+
   if (settingsBtn && settingsModal) {
     settingsBtn.addEventListener('click', () => {
-      settingsModal.classList.remove('hidden');
+      openSettings();
     });
 
     closeSettingsBtn.addEventListener('click', () => {
-      settingsModal.classList.add('hidden');
+      closeSettings();
     });
 
     // Close on outside click
+    // If settings modal is open, close it on outside click
     settingsModal.addEventListener('click', (e) => {
       if (e.target === settingsModal) {
-        settingsModal.classList.add('hidden');
+        closeSettings();
       }
     });
   }

@@ -582,26 +582,37 @@ body.dark-mode .settings-trigger:hover {
 }
 
 /* Modal Styles */
+body.modal-open {
+  overflow: hidden;
+  /* Lock scroll */
+}
+
+/* Modal Styles */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
+  background: rgba(0, 0, 0, 0.6);
+  /* Slightly darker since blur is gone */
+  display: flex !important;
+  /* Override any potential hidden utility */
   align-items: center;
   justify-content: center;
   z-index: 2000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s;
-  backdrop-filter: blur(4px);
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  will-change: opacity;
+  /* backdrop-filter: blur(4px); Removed for performance (Lag Fix) */
 }
 
-.modal:not(.hidden) {
+.modal.visible {
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
 }
 
 .modal-content {
