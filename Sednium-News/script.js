@@ -460,6 +460,7 @@ categoryButtons.forEach(btn => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Sednium News Script v1.5.1 Loaded [DEBUG BUILD]');
   console.log('DOM loaded, setting initial state');
   /* ========== SETTINGS LOGIC ========== */
 
@@ -615,6 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (settingsBtn) {
     // defined above
     settingsBtn.onclick = function (e) {
+      console.log('Settings button clicked');
       e.preventDefault();
       openSettings();
     };
@@ -668,6 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedBtn) {
     // Use stopImmediatePropagation to ensure no other listeners fire
     savedBtn.addEventListener('click', (e) => {
+      console.log('Saved button clicked');
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -891,9 +894,13 @@ if (toggleRelatedBtn) {
 }
 
 async function openReadView(index) {
+  console.log('openReadView called for index:', index);
   currentArticleIndex = index; // Update index immediately
   const article = currentArticles[index];
-  if (!article) return;
+  if (!article) {
+    console.error('Article not found at index:', index);
+    return;
+  }
 
   // Render content
   renderReadView({
@@ -909,6 +916,8 @@ async function openReadView(index) {
   // *** CRITICAL FIX: Update Bookmark Button State ***
   const bookmarks = JSON.parse(localStorage.getItem('savedArticles') || '[]');
   const isBookmarked = bookmarks.some(b => b.link === article.link);
+  // Log bookmark state
+  console.log('Article is bookmarked:', isBookmarked);
   updateBookmarkButton(isBookmarked);
 }
 
@@ -1080,6 +1089,7 @@ function isBookmarked(articleLink) {
 }
 
 function toggleBookmark(article) {
+  console.log('toggleBookmark called for:', article.title);
   const bookmarks = getBookmarks();
   const index = bookmarks.findIndex(b => b.link === article.link);
 
