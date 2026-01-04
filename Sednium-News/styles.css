@@ -1404,3 +1404,94 @@ body.dark-mode .slider-input::-webkit-slider-thumb {
     opacity: 1;
   }
 }
+
+/* Bottom Navigation (Mobile Only) */
+.bottom-nav {
+  display: none;
+  /* Hidden by default (Desktop) */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--bg-color-light);
+  border-top: 1px solid var(--accent-color);
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.5rem 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .bottom-nav {
+  background-color: var(--bg-color-dark);
+  border-color: #333;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--accent-color);
+  font-size: 0.75rem;
+  padding: 0.5rem;
+  width: 100%;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-item.active {
+  color: var(--text-color-light);
+}
+
+body.dark-mode .nav-item.active {
+  color: var(--text-color-dark);
+}
+
+/* Mobile Responsiveness (New v1.6 Spec) */
+@media (max-width: 768px) {
+
+  /* Show Bottom Nav */
+  .bottom-nav {
+    display: flex;
+  }
+
+  /* Add padding to body so content isn't hidden behind nav */
+  body {
+    padding-bottom: 80px;
+  }
+
+  /* Hide Desktop Settings Button */
+  .settings-trigger {
+    display: none !important;
+  }
+
+  /* Hide 'Saved' category pill (since it's in nav now) */
+  #saved-btn {
+    display: none !important;
+  }
+
+  /* Adjust Controls centered */
+  .controls {
+    max-width: 100%;
+  }
+
+  /* Back to top button position check */
+  .back-to-top {
+    bottom: 5rem;
+    /* Raise above nav bar */
+  }
+}
+
+/* Desktop Settings Button Tweaks */
+.settings-trigger {
+  /* Restored default positioning outside flex */
+  margin-left: 1rem;
+}

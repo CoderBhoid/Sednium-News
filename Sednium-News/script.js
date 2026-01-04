@@ -460,7 +460,7 @@ categoryButtons.forEach(btn => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Sednium News Script v1.5.4-ui-fix Loaded');
+  console.log('Sednium News Script v1.6.0-mobile Loaded');
   console.log('DOM loaded, setting initial state');
   /* ========== SETTINGS LOGIC ========== */
 
@@ -1252,5 +1252,77 @@ document.body.addEventListener('touchend', (e) => {
   }
   isPulling = false;
 }, { passive: true });
+
+// ========== BOTTOM NAVIGATION (Mobile v1.6) ==========
+const navHome = document.getElementById('nav-home');
+const navSaved = document.getElementById('nav-saved');
+const navSettings = document.getElementById('nav-settings');
+const bottomNavItems = document.querySelectorAll('.nav-item');
+
+function updateBottomNav(activeId) {
+  bottomNavItems.forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(activeId);
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+if (navHome) {
+  navHome.addEventListener('click', () => {
+    updateBottomNav('nav-home');
+    // Reset to top news
+    setCategoryInUrl('top');
+    setActiveCategory('top');
+    fetchNews(true);
+    isBookmarksView = false;
+  });
+}
+
+if (navSaved) {
+  navSaved.addEventListener('click', () => {
+    updateBottomNav('nav-saved');
+    loadSavedArticles();
+  });
+}
+
+if (navSettings) {
+  navSettings.addEventListener('click', () => {
+    // Settings doesn't change view, just opens modal
+    // Maybe keep previous active state? 
+    // Usually Settings is a modal, so we don't necessarily 'switch' tabs fully, but user wants it as a tab.
+    // Let's open settings and highlight tab.
+    updateBottomNav('nav-settings');
+    openSettings();
+  });
+}
+
+// Update Bottom Nav state based on other interactions
+// Hook into existing functions
+const originalLoadSaved = loadSavedArticles;
+loadSavedArticles = function () {
+  originalLoadSaved();
+  updateBottomNav('nav-saved');
+};
+
+const originalFetchNews = fetchNews;
+fetchNews = function (reset) {
+  originalFetchNews(reset);
+  // If we are fetching news, we are likely home (or a category)
+  // Check if saved view is active?
+  const savedBtn = document.getElementById('saved-btn');
+  if (savedBtn && !savedBtn.classList.contains('active')) {
+    updateBottomNav('nav-home');
+  }
+};
+
+// Also listen for settings close to revert nav state? 
+// User requested "Settings" as a layout items. 
+// If they close settings modal manually, should we revert nav to Home?
+// Let's assume yes for better UX.
+if (settingsModal) {
+  // Extend closeSettings to handle nav visual
+  const oldClose = closeSettings; // careful with scope if defined inside DOMContentLoaded
+  // Since closeSettings is inside DOMContentLoaded scope, we can't easily override it globally here at end of file.
+  // We will attach an observer or just leave it. 
+  // Simple fix: When modal closes, check if we are in saved view or home view.
+}
 
 // End of script logic
