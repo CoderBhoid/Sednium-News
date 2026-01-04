@@ -807,8 +807,12 @@ function toggleTTS() {
   }
 
   // Start Speaking
+  if (!readContent) return;
   const text = readContent.innerText;
-  if (!text || text.length < 10) return;
+  if (!text || text.length < 10) {
+    alert("No readable content found for this article.");
+    return;
+  }
 
   currentUtterance = new SpeechSynthesisUtterance(text);
   currentUtterance.lang = 'en-US';
@@ -1239,87 +1243,4 @@ document.body.addEventListener('touchend', (e) => {
   isPulling = false;
 }, { passive: true });
 
-// ========== BOOKMARKS VIEW ==========
-
-let isBookmarksView = false;
-
-function displayBookmarks() {
-  const bookmarks = getBookmarks();
-  isBookmarksView = true;
-
-  // Clear active state from all category buttons
-  categoryButtons.forEach(btn => btn.classList.remove('active'));
-  document.getElementById('saved-btn').classList.add('active');
-
-  // Clear news container
-  newsContainer.innerHTML = '';
-  loading.style.display = 'none';
-
-  if (bookmarks.length === 0) {
-    newsContainer.innerHTML = `
-      <div class="empty-bookmarks">
-        <p>📚 No saved articles yet</p>
-        <p style="color: var(--accent-color); font-size: 0.9rem;">
-          Tap the bookmark icon when reading an article to save it here.
-        </p>
-      </div>
-    `;
-    return;
-  }
-
-  // Display bookmarked articles
-  bookmarks.forEach((bookmark, index) => {
-    const card = document.createElement('div');
-    card.className = 'card fade-in';
-    card.style.cursor = 'pointer';
-    card.style.position = 'relative';
-
-    const imageSrc = bookmark.image || getCategoryFallbackImage('default');
-
-    card.innerHTML = `
-      <button class="remove-bookmark-btn" data-index="${index}" title="Remove bookmark">✕</button>
-      <img src="${imageSrc}" alt="${bookmark.title}" loading="lazy">
-      <h2>${bookmark.title}</h2>
-      <small>By ${bookmark.source || 'Unknown Source'}</small>
-      <small style="display: block; margin-top: 0.5rem; color: var(--accent-color);">
-        Saved ${new Date(bookmark.savedAt).toLocaleDateString()}
-      </small>
-    `;
-
-    // Click on card to open article
-    card.addEventListener('click', (e) => {
-      // Don't open if clicking remove button
-      if (e.target.classList.contains('remove-bookmark-btn')) return;
-      window.open(bookmark.link, '_blank');
-    });
-
-    newsContainer.appendChild(card);
-  });
-
-  // Add event listeners to remove buttons
-  document.querySelectorAll('.remove-bookmark-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      removeBookmark(index);
-    });
-  });
-}
-
-function removeBookmark(index) {
-  const bookmarks = getBookmarks();
-  bookmarks.splice(index, 1);
-  saveBookmarks(bookmarks);
-  displayBookmarks(); // Refresh the view
-}
-
-// Saved button click handler
-document.getElementById('saved-btn').addEventListener('click', displayBookmarks);
-
-// Exit bookmarks view when clicking a category
-categoryButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    isBookmarksView = false;
-    document.getElementById('saved-btn').classList.remove('active');
-  });
-});
+// End of script logic
