@@ -1567,9 +1567,7 @@ body.dark-mode .nav-item.active {
   /* Keep accent color in dark mode too */
 }
 
-width: 24px;
-height: 24px;
-}
+
 
 .nav-item.active {
   color: var(--text-color-light);
