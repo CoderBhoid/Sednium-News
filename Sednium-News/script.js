@@ -793,12 +793,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (savedBtn) {
-    // Use stopImmediatePropagation to ensure no other listeners fire
     savedBtn.addEventListener('click', (e) => {
       console.log('Saved button clicked');
       e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
+
+      // Update UI state
+      if (categoryButtons) {
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+      }
+      savedBtn.classList.add('active');
+
+      // Update Bottom Nav if visible
+      if (typeof updateBottomNav === 'function') {
+        updateBottomNav('nav-saved');
+      }
 
       setActiveCategory(null);
       loadSavedArticles();
@@ -960,16 +968,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Override internal function logic if needed, or just rely on manual calls?
-  // Since we are inside the closure, we can't easily "override" functions declared with 'function' keyword 
-  // unless we change how they are called or if they were var/let/const.
-  // But we can add listeners to the desktop buttons to also update bottom nav.
-
-  if (savedBtn) {
-    savedBtn.addEventListener('click', () => {
-      updateBottomNav('nav-saved');
-    });
-  }
+  // Main saved listener handles everything now.
 
   // When settings close, revert nav if needed?
   // Let's keep it simple for now.
@@ -1153,12 +1152,13 @@ if (toggleRelatedBtn) {
 
 async function openReadView(index) {
   console.log('openReadView called for index:', index);
-  currentArticleIndex = index; // Update index immediately
-  const article = currentArticles[index];
-  if (!article) {
-    console.error('Article not found at index:', index);
+  if (index === null || index < 0 || !currentArticles || !currentArticles[index]) {
+    console.error('Invalid article index or empty list:', index);
     return;
   }
+
+  currentArticleIndex = index; // Update index immediately
+  const article = currentArticles[index];
 
   // Render content
   renderReadView({
