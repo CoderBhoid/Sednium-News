@@ -350,6 +350,11 @@ async function fetchNews(reset = false) {
       // Don't mix custom feeds logic for other categories
     }
 
+    // Populate Settings Filter List
+    if (typeof generateSourceFilters === 'function') {
+      generateSourceFilters(allFetchedArticles);
+    }
+
   } catch (error) {
     console.error('Error fetching news:', error);
     if (reset) newsContainer.innerHTML = '<p class="error">Failed to load news. Check your connection.</p>';
