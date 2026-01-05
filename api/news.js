@@ -55,6 +55,12 @@ const RSS_FEEDS = {
         'http://rss.cnn.com/rss/cnn_allpolitics.rss',
         'https://feeds.reuters.com/reuters/politicsNews',
         'https://www.politico.com/rss/politics08.xml'
+    ],
+    india: [
+        'https://timesofindia.indiatimes.com/rssfeedstopstories.cms',
+        'https://www.thehindu.com/news/national/feeder/default.rss',
+        'https://feeds.feedburner.com/ndtvnews-top-stories',
+        'https://www.news18.com/common-feeds/v1/cne/rss/india.xml'
     ]
 };
 

@@ -232,15 +232,13 @@ function isValidImageUrl(url) {
 
 async function fetchNews(reset = false) {
   if (typeof isBookmarksView !== 'undefined' && isBookmarksView) {
-    if (reset) {
-      // If reset is called (e.g. Pull to refresh), we should probably stay in Saved mode?
-      // Or user wants to refresh the saved list?
-      // loadSavedArticles() should be called instead.
-      // But if fetchNews is called, it might be from infinite scroll.
-      console.log('fetchNews blocked by isBookmarksView');
-      return;
-    }
-    // Infinite scroll also blocked
+    // Logic for saved view...
+    return;
+  }
+
+  // Disable infinite scroll for search (since it's a filtering of fixed results)
+  const { mode, value } = getSearchParams();
+  if (mode === 'search' && !reset) {
     return;
   }
 
@@ -325,7 +323,21 @@ async function fetchNews(reset = false) {
 
     currentArticles = allFetchedArticles; // No local filter for now aside from search which is done server-side
 
-    renderArticles(currentArticles);
+    if (currentArticles.length === 0) {
+      if (mode === 'search') {
+        const fallbackImage = getCategoryFallbackImage('default');
+        newsContainer.innerHTML = `
+                <div style="text-align:center; padding:2rem;">
+                  <p>No results found for "<b>${value}</b>"</p>
+                  <button onclick="setCategoryInUrl('top'); fetchNews(true);" style="margin-top:1rem; padding:0.5rem 1rem; background:var(--accent-color); color:white; border:none; border-radius:8px; cursor:pointer;">Return to Top News</button>
+                </div>
+            `;
+      } else {
+        newsContainer.innerHTML = '<p class="error">No news available in this category currently.</p>';
+      }
+    } else {
+      renderArticles(currentArticles);
+    }
 
     if (reset) {
       newsContainer.scrollTop = 0;

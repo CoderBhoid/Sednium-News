@@ -1488,6 +1488,17 @@ body.dark-mode .slider-input::-webkit-slider-thumb {
   gap: 0 !important;
 }
 
+/* Ensure Bottom Nav is visible over Reader View (z-index 1000) */
+.bottom-nav {
+  z-index: 1100 !important;
+}
+
+/* Add padding to reader view to prevent overlap */
+.read-view-main {
+  padding-bottom: 70px;
+  /* Space for bottom nav */
+}
+
 body.dark-mode .bottom-nav {
   background-color: var(--bg-color-dark);
   border-color: #333;
