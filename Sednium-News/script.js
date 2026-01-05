@@ -1463,6 +1463,9 @@ function renderSkeletons(count = 5) {
   }
 }
 
+  }
+}
+
 // Share functionality
 function shareArticle(article) {
   const shareData = {
@@ -1476,15 +1479,91 @@ function shareArticle(article) {
       console.log('Share cancelled or failed:', err);
     });
   } else {
-    // Fallback: copy to clipboard
+    // Native Toast if available
+    try {
+      if (window.Capacitor?.Plugins?.Toast) {
+        window.Capacitor.Plugins.Toast.show({
+          text: 'Link Copied!',
+          duration: 'short'
+        });
+        navigator.clipboard.writeText(article.link);
+        return;
+      }
+    } catch (e) { }
+
+    // Fallback
     navigator.clipboard.writeText(article.link).then(() => {
       alert('Link copied to clipboard!');
     }).catch(() => {
-      // Fallback for older browsers
       prompt('Copy this link:', article.link);
     });
   }
 }
+
+/* ========== NATIVE & PWA FEATURES (HAPTICS & NOTIFICATIONS) ========== */
+const Haptics = window.Capacitor?.Plugins?.Haptics;
+const LocalNotifications = window.Capacitor?.Plugins?.LocalNotifications;
+
+// Smooth Haptics Helper
+async function triggerHaptic(style = 'light') {
+  // Gboard-like feel: Light impact
+  if (Haptics) {
+    try {
+      await Haptics.impact({ style: style.toUpperCase() });
+    } catch (e) {
+      // Fallback or ignore
+    }
+  } else if (navigator.vibrate) {
+    // Web Fallback
+    if (style === 'light') navigator.vibrate(10);
+    if (style === 'medium') navigator.vibrate(20);
+    if (style === 'heavy') navigator.vibrate(40);
+  }
+}
+
+// Native Notification Helper
+async function scheduleDailyBriefing() {
+  if (!LocalNotifications) return;
+
+  // Request permission
+  const perm = await LocalNotifications.requestPermissions();
+  if (perm.display !== 'granted') return;
+
+  // Schedule for 9 AM
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        title: "Sednium Daily Briefing",
+        body: "Your top stories are ready.",
+        id: 1,
+        schedule: { on: { hour: 9, minute: 0 }, allowWhileIdle: true },
+        sound: null,
+        attachments: null,
+        actionTypeId: "",
+        extra: null
+      }
+    ]
+  });
+  console.log('Daily Briefing Scheduled');
+  if (window.Capacitor?.Plugins?.Toast) {
+    window.Capacitor.Plugins.Toast.show({ text: 'Daily Briefing enabled for 9:00 AM' });
+  } else {
+    alert('Daily Briefing enabled for 9:00 AM');
+  }
+}
+
+// Add native listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // Pull to refresh haptic is handled in 'touchend'
+
+  // Add haptics to all buttons
+  document.querySelectorAll('button, .card, .nav-item').forEach(el => {
+    el.addEventListener('click', () => triggerHaptic('light'), { passive: true });
+  });
+});
+
+// Update pull-to-refresh to trigger haptic
+
 
 // Event listeners for share and bookmark
 let currentArticleIndex = null;
@@ -1580,6 +1659,7 @@ document.body.addEventListener('touchend', (e) => {
   const pullDistance = e.changedTouches[0].clientY - pullStartY;
   if (pullDistance > 100 && window.scrollY === 0) {
     // Trigger refresh
+    triggerHaptic('medium'); // Stronger feedback for refresh action
     const { mode, value } = getSearchParams();
     fetchNews(true);
   }
