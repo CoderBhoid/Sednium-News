@@ -244,15 +244,17 @@ async function fetchNews(reset = false) {
 
   if (isLoading) return;
   isLoading = true;
-  if (!reset) {
-    loading.style.display = 'block';
-  }
-
   if (reset) {
     nextPageToken = null;
-    newsContainer.innerHTML = '';
     currentArticles = [];
     allFetchedArticles = [];
+    // Use Skeletons for initial load instead of empty
+    renderSkeletons();
+    // Hide spinner since skeletons are showing
+    if (loading) loading.style.display = 'none';
+  } else {
+    // Show spinner for infinite scroll
+    if (loading) loading.style.display = 'block';
   }
 
   const { mode, value } = getSearchParams();
