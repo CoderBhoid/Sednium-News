@@ -68,44 +68,49 @@
   </button>
 
   <!-- Settings Modal -->
-  <div id="settings-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Settings</h2>
-        <button id="close-settings" class="close-btn">&times;</button>
-      </div>
+  <!-- Full Page Settings View -->
+  <div id="settings-view" class="hidden">
+    <div class="settings-header">
+      <button id="close-settings" class="nav-btn">
+        <span>← Back</span>
+      </button>
+      <h2>Preferences</h2>
+      <div style="width: 60px;"></div> <!-- Spacer for balance -->
+    </div>
+
+    <div class="settings-content">
       <div class="settings-section">
         <h3>Appearance</h3>
         <div class="option-row">
           <span>Theme</span>
           <div class="toggle-group theme-group">
-            <button data-theme="light" class="active">Light</button>
+            <button data-theme="light">Light</button>
             <button data-theme="dark">Dark</button>
           </div>
         </div>
-      </div>
-      <div class="settings-section">
-        <h3>Typography</h3>
+
         <div class="option-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
           <span>Font Style</span>
           <div class="toggle-group font-group">
-            <button data-font="ndot" class="active">Ndot</button>
+            <button data-font="ndot">Ndot</button>
             <button data-font="inter" style="font-family: 'Inter', sans-serif;">Inter</button>
             <button data-font="serif" style="font-family: 'Merriweather', serif;">Serif</button>
           </div>
         </div>
-      </div>
-      <div class="settings-section">
-        <h3>Display Warmth</h3>
-        <div class="slider-container">
-          <input type="range" min="-50" max="50" value="0" class="slider-input" id="warmthSlider">
-          <div class="slider-labels">
-            <span>Cool</span>
-            <span>Neutral</span>
-            <span>Warm</span>
+
+        <div class="option-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+          <span>Display Warmth</span>
+          <div class="slider-container">
+            <input type="range" min="-50" max="50" value="0" class="slider-input" id="warmthSlider">
+            <div class="slider-labels">
+              <span>Cool</span>
+              <span>Neutral</span>
+              <span>Warm</span>
+            </div>
           </div>
         </div>
       </div>
+
       <div class="settings-section">
         <h3>Feed Preferences</h3>
 
@@ -127,7 +132,7 @@
         </div>
       </div>
       <div class="settings-footer">
-        <p>©Sednium 2025 v1.6.3-style-fix</p>
+        <p>©Sednium 2025 v1.7.0-full-settings</p>
         <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.2rem;">Proudly Open Source</p>
       </div>
     </div>

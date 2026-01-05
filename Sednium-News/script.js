@@ -602,50 +602,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Modal Handling (Simplified) ---
+  // --- Settings View Handling ---
+  const settingsView = document.getElementById('settings-view');
+
   function openSettings() {
-    if (settingsModal) {
-      console.log('Opening Settings Modal');
-      settingsModal.classList.remove('hidden'); // Ensure not hidden
-      settingsModal.classList.add('visible'); // Fade in
-      document.body.classList.add('modal-open'); // Lock scroll
+    if (settingsView) {
+      console.log('Opening Settings View');
+      settingsView.classList.remove('hidden');
+      // Small timeout to allow display:block to apply before adding transform class
+      requestAnimationFrame(() => {
+        settingsView.classList.add('visible');
+      });
+      document.body.classList.add('modal-open'); // Prevent body scroll
     }
   }
 
   function closeSettings() {
-    if (settingsModal) {
-      console.log('Closing Settings Modal');
-      settingsModal.classList.remove('visible');
+    if (settingsView) {
+      console.log('Closing Settings View');
+      settingsView.classList.remove('visible');
+      // Wait for transition to finish before hiding
       setTimeout(() => {
-        if (!settingsModal.classList.contains('visible')) {
-          settingsModal.classList.add('hidden');
+        if (!settingsView.classList.contains('visible')) {
+          settingsView.classList.add('hidden');
         }
       }, 300);
       document.body.classList.remove('modal-open');
     }
   }
 
-
   if (settingsBtn) {
-    // defined above
     settingsBtn.onclick = function (e) {
-      console.log('Settings button clicked');
       e.preventDefault();
       openSettings();
     };
   }
 
-  if (settingsModal) {
-    settingsModal.onclick = function (e) {
-      if (e.target === settingsModal) {
-        closeSettings();
-      }
-    };
-
-    closeSettingsBtn.onclick = function () {
+  if (closeSettingsBtn) {
+    closeSettingsBtn.onclick = function (e) {
+      e.preventDefault();
       closeSettings();
     };
   }
+
+  // Note: No outside click close for full page view "Back" button is preferred.
 
   // --- Saved Tab Logic ---
   const savedBtn = document.getElementById('saved-btn');
