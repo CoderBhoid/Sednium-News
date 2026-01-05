@@ -374,8 +374,9 @@ function loadCustomFeeds() {
   feeds.forEach((url, index) => {
     const div = document.createElement('div');
     div.className = 'custom-rss-item';
+    // Removed inline style; handled by CSS class now
     div.innerHTML = `
-            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;" title="${url}">${url}</span>
+            <span title="${url}">${url}</span>
             <button class="remove-feed-btn" data-index="${index}">&times;</button>
         `;
     div.querySelector('.remove-feed-btn').onclick = () => removeCustomFeed(index);
@@ -711,6 +712,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function openSettings() {
     if (settingsView) {
       console.log('Opening Settings View');
+      if (typeof loadCustomFeeds === 'function') loadCustomFeeds(); // Refresh list
       settingsView.classList.remove('hidden');
       // Small timeout to allow display:block to apply before adding transform class
       requestAnimationFrame(() => {

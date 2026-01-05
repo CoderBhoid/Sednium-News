@@ -1331,6 +1331,14 @@ body.dark-mode .read-original {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 200px;
+  /* Limit height */
+  overflow-y: auto;
+  /* Scrollable */
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
 }
 
 .custom-rss-item {
@@ -1340,7 +1348,17 @@ body.dark-mode .read-original {
   background: var(--bg-color-alt);
   padding: 8px 12px;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  min-width: 0;
+  /* Critical for flex child truncation */
+}
+
+.custom-rss-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 12px;
+  flex: 1;
 }
 
 .remove-feed-btn {
