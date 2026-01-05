@@ -1380,8 +1380,8 @@ body.dark-mode .read-original {
   height: 100vh;
   pointer-events: none;
   /* Allow clicks to pass through */
-  z-index: 1500;
-  /* Above Content, Reader, Bottom Nav. Below Settings. */
+  z-index: 2100;
+  /* Above Settings (2000) and everything else. */
   background-color: var(--warmth-color, transparent);
   transition: background-color 0.2s ease;
 }
