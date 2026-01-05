@@ -587,6 +587,15 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, setting initial state');
   /* ========== SETTINGS LOGIC ========== */
 
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(req => console.log('Service Worker Registered!', req.scope))
+        .catch(err => console.log('Service Worker registration failed', err));
+    });
+  }
+
   // Elements
   const settingsBtn = document.getElementById('settings-trigger');
   // const settingsModal = document.getElementById('settings-modal'); // Removed in v1.7
