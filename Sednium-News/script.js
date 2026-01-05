@@ -1553,6 +1553,9 @@ async function scheduleDailyBriefing() {
 
 // Add native listeners
 document.addEventListener('DOMContentLoaded', () => {
+  // Check for updates on launch
+  if (typeof checkForAppUpdates === 'function') checkForAppUpdates();
+
   // Pull to refresh haptic is handled in 'touchend'
 
   // Add haptics to all buttons
