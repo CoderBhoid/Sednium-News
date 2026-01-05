@@ -237,8 +237,8 @@ async function fetchNews(reset = false) {
   }
 
   // Disable infinite scroll for search (since it's a filtering of fixed results)
-  const { mode, value } = getSearchParams();
-  if (mode === 'search' && !reset) {
+  let paramsInfo = getSearchParams();
+  if (paramsInfo.mode === 'search' && !reset) {
     return;
   }
 
