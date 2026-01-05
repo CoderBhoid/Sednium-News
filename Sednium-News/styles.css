@@ -1300,6 +1300,71 @@ body.dark-mode .read-original {
   /* Fast toggle */
 }
 
+/* Custom RSS Feeds */
+.custom-feed-input-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.settings-input {
+  flex: 1;
+  background: var(--bg-color-alt);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.settings-action-btn {
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.custom-rss-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.custom-rss-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-color-alt);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.remove-feed-btn {
+  background: none;
+  border: none;
+  color: #ff4444;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Scrollbar styling override for Webkit */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 4px;
+}
+
 /* Warmth Slider Styles */
 .slider-container {
   width: 100%;

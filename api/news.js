@@ -61,12 +61,26 @@ const RSS_FEEDS = {
 // Fallback image if none found (used as last resort)
 const FALLBACK_IMG = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80';
 
+// Base URL for the site, used in RSS feed generation
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
 export default async function handler(req, res) {
     const parser = new Parser();
     const category = (req.query.category || 'top').toLowerCase();
+    const customUrl = req.query.custom_url;
 
-    // Select feeds based on category, fallback to 'top'
-    const feedUrls = RSS_FEEDS[category] || RSS_FEEDS['top'];
+    // Select feeds based on category, OR use custom URL if provided
+    let feedUrls = RSS_FEEDS[category] || RSS_FEEDS['top'];
+
+    if (customUrl) {
+        // Basic validation for custom URL
+        try {
+            new URL(customUrl); // Will throw if invalid
+            feedUrls = [customUrl];
+        } catch (e) {
+            return res.status(400).json({ status: 'error', message: 'Invalid custom URL' });
+        }
+    }
 
     try {
         // Fetch all feeds in parallel
@@ -84,7 +98,7 @@ export default async function handler(req, res) {
                     creator: item.creator ? [item.creator] : null
                 }));
             } catch (err) {
-                console.error(`Failed to parse feed ${url}:`, err.message);
+                console.error(`Failed to parse feed ${url}: `, err.message);
                 return []; // Return empty array on failure so one bad feed doesn't break all
             }
         });

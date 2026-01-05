@@ -268,41 +268,129 @@ async function fetchNews(reset = false) {
   }
 
   // Use local API
-  const url = `/api/news?${params.toString()}`;
+  const finalUrl = `/api/news?${params.toString()}`;
+
+  // Fetch Custom Feeds Logic
+  const customFeeds = JSON.parse(localStorage.getItem('customFeeds') || '[]');
+  const validCustomFeeds = customFeeds.filter(url => url && url.startsWith('http'));
+
+  const fetchPromises = [fetch(finalUrl).then(r => r.json())];
+
+  // If in 'top' category (default), also fetch custom feeds
+  if (mode === 'category' && value === 'top' && validCustomFeeds.length > 0) {
+    validCustomFeeds.forEach(feedUrl => {
+      // Proxy through our API
+      const proxyUrl = `/api/news?custom_url=${encodeURIComponent(feedUrl)}`;
+      fetchPromises.push(fetch(proxyUrl).then(r => r.json()));
+    });
+  }
 
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const data = await res.json();
+    const responses = await Promise.all(fetchPromises);
 
-    if (data.status === 'success') {
-      if (data.results && data.results.length > 0) {
-        // Store raw results
-        allFetchedArticles = data.results;
-
-        // Setup UI
-        generateSourceFilters(allFetchedArticles);
-        applyFiltersAndSort();
-
-        nextPageToken = data.nextPage || null;
-      } else {
-        const fallbackImage = getCategoryFallbackImage(mode === 'category' ? value : 'default');
-        newsContainer.innerHTML = `
-          <p>No news found for <b>${value}</b>.</p>
-          <img src="${fallbackImage}" alt="No news available" style="max-width: 100%;">
-        `;
+    // Aggregate results
+    let allNewArticles = [];
+    responses.forEach(data => {
+      if (data.status === 'success' && data.results) {
+        allNewArticles.push(...data.results);
       }
+    });
+
+    // Deduplicate by link or title
+    const seen = new Set();
+    allNewArticles = allNewArticles.filter(a => {
+      const key = a.link || a.title;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    // Sort logic (Newest vs Variety)
+    if (reset) {
+      allFetchedArticles = allNewArticles;
     } else {
-      console.error('API error:', data);
-      if (reset) newsContainer.innerHTML = `<p>Error: ${data.message || 'Failed to fetch news'}</p>`;
+      // Append if infinite scroll (though we usually just replace for now)
+      allFetchedArticles = [...allFetchedArticles, ...allNewArticles];
     }
-  } catch (err) {
-    console.error('Fetch error:', err);
-    if (reset) newsContainer.innerHTML = `<p>Error: ${err.message}</p>`;
+
+    // Apply Sort
+    if (currentSort === 'latest') {
+      allFetchedArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    } else {
+      // Variety: Shuffle/Interleave is already somewhat done by api, but here we can just randomize slightly or keep as is
+      // For now, simple sort by date is safest to avoid weird ordering, or let API's "round-robin" hold for the main feed
+      // If we have mixed sources, date sort is usually best fallback
+      allFetchedArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    }
+
+    currentArticles = allFetchedArticles; // No local filter for now aside from search which is done server-side
+
+    renderArticles(currentArticles);
+
+    if (reset) {
+      newsContainer.scrollTop = 0;
+    }
+
+    // Save logic
+    if (mode === 'category' && value !== 'top') {
+      // Don't mix custom feeds logic for other categories
+    }
+
+  } catch (error) {
+    console.error('Error fetching news:', error);
+    if (reset) newsContainer.innerHTML = '<p class="error">Failed to load news. Check your connection.</p>';
   } finally {
     isLoading = false;
     loading.style.display = 'none';
   }
+}
+
+// Custom Feeds Management
+function loadCustomFeeds() {
+  const list = document.getElementById('custom-rss-list');
+  if (!list) return;
+  const feeds = JSON.parse(localStorage.getItem('customFeeds') || '[]');
+  list.innerHTML = '';
+
+  if (feeds.length === 0) {
+    list.innerHTML = '<div style="text-align:center; opacity:0.6; padding:0.5rem;">No custom feeds yet</div>';
+    return;
+  }
+
+  feeds.forEach((url, index) => {
+    const div = document.createElement('div');
+    div.className = 'custom-rss-item';
+    div.innerHTML = `
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;" title="${url}">${url}</span>
+            <button class="remove-feed-btn" data-index="${index}">&times;</button>
+        `;
+    div.querySelector('.remove-feed-btn').onclick = () => removeCustomFeed(index);
+    list.appendChild(div);
+  });
+}
+
+function addCustomFeed(url) {
+  if (!url || !url.startsWith('http')) {
+    alert('Please enter a valid URL (starting with http/https)');
+    return;
+  }
+  const feeds = JSON.parse(localStorage.getItem('customFeeds') || '[]');
+  if (feeds.includes(url)) {
+    alert('Feed already exists!');
+    return;
+  }
+  feeds.push(url);
+  localStorage.setItem('customFeeds', JSON.stringify(feeds));
+  document.getElementById('custom-rss-input').value = '';
+  loadCustomFeeds();
+  alert('Feed added! Return to Home to see updates.');
+}
+
+function removeCustomFeed(index) {
+  const feeds = JSON.parse(localStorage.getItem('customFeeds') || '[]');
+  feeds.splice(index, 1);
+  localStorage.setItem('customFeeds', JSON.stringify(feeds));
+  loadCustomFeeds();
 }
 
 /**
@@ -1041,6 +1129,35 @@ async function openReadView(index) {
   // Log bookmark state
   console.log('Article is bookmarked:', isBookmarked);
   updateBookmarkButton(isBookmarked);
+
+  // *** Share Button Logic ***
+  const shareBtn = document.getElementById('share-btn');
+  if (shareBtn) {
+    // Clone to remove old listeners if any
+    const newShareBtn = shareBtn.cloneNode(true);
+    shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+
+    newShareBtn.addEventListener('click', async () => {
+      const deepLink = `${window.location.origin}/?read=${encodeURIComponent(article.link)}`;
+      const shareData = {
+        title: article.title,
+        text: `Check out this article on Sednium News: ${article.title}`,
+        url: deepLink
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else {
+          // Fallback to clipboard
+          await navigator.clipboard.writeText(deepLink);
+          alert('Link copied to clipboard!');
+        }
+      } catch (err) {
+        console.error('Share failed:', err);
+      }
+    });
+  }
 }
 
 /**

@@ -112,6 +112,19 @@
       </div>
 
       <div class="settings-section">
+        <h3>Custom Feeds</h3>
+        <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem;">Add your own RSS links (e.g. Subreddit, Blog)
+        </p>
+        <div class="custom-feed-input-group">
+          <input type="text" id="custom-rss-input" placeholder="Paste RSS URL here" class="settings-input">
+          <button id="add-custom-rss-btn" class="settings-action-btn">Add</button>
+        </div>
+        <div id="custom-rss-list" class="custom-rss-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="settings-section">
         <h3>Feed Preferences</h3>
 
         <div class="option-row" style="margin-bottom: 1rem;">
