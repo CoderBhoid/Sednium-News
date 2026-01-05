@@ -92,7 +92,6 @@ export default async function handler(req, res) {
         const results = await Promise.all(feedPromises);
 
         // Round-Robin Interleaving for Variety
-        // Instead of sorting purely by date (which clumps sources), we pick 1 from each feed in turns.
         const allArticles = [];
         const maxLength = Math.max(...results.map(r => r.length));
 
@@ -104,11 +103,23 @@ export default async function handler(req, res) {
             }
         }
 
+        // Search Filter (In-Memory)
+        const q = (req.query.q || '').toLowerCase().trim();
+        let finalResults = allArticles;
+
+        if (q) {
+            finalResults = allArticles.filter(item => {
+                const title = (item.title || '').toLowerCase();
+                const desc = (item.description || '').toLowerCase();
+                return title.includes(q) || desc.includes(q);
+            });
+        }
+
         // Format to match old NewsData.io structure expected by frontend
         const responseData = {
             status: 'success',
-            totalResults: allArticles.length,
-            results: allArticles.slice(0, 50) // Limit to 50 items (increased from 40 for variety)
+            totalResults: finalResults.length,
+            results: finalResults.slice(0, 50)
         };
 
         res.setHeader('Content-Type', 'application/json');

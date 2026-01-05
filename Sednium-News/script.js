@@ -263,7 +263,8 @@ async function fetchNews(reset = false) {
   if (mode === 'category') {
     params.append('category', value);
   } else if (mode === 'search') {
-    params.append('category', 'top'); // Search logic pending
+    params.append('q', value); // Pass search query to API
+    params.append('category', 'top'); // Search across top news by default (or all if API supports)
   }
 
   // Use local API
