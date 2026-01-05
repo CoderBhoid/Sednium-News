@@ -998,10 +998,15 @@ const listenBtn = document.getElementById('listen-btn');
 let ttsSpeaking = false;
 let currentUtterance = null;
 
+let ttsChunks = [];
+let ttsChunkIndex = 0;
+
 function stopTTS() {
   if (window.speechSynthesis) {
     window.speechSynthesis.cancel();
     ttsSpeaking = false;
+    ttsChunks = [];
+    ttsChunkIndex = 0;
     updateListenButtonState();
   }
 }
@@ -1010,7 +1015,7 @@ function updateListenButtonState() {
   if (!listenBtn) return;
   const icon = listenBtn.querySelector('svg');
   if (ttsSpeaking) {
-    listenBtn.classList.add('active'); // Add styling for active state if needed
+    listenBtn.classList.add('active');
     // Stop Icon
     icon.innerHTML = '<rect x="4" y="4" width="16" height="16"></rect>';
   } else {
@@ -1020,13 +1025,47 @@ function updateListenButtonState() {
   }
 }
 
+function speakNextChunk() {
+  if (ttsChunkIndex >= ttsChunks.length) {
+    ttsSpeaking = false;
+    updateListenButtonState();
+    return;
+  }
+
+  const text = ttsChunks[ttsChunkIndex];
+  // Skip empty or super short chunks
+  if (!text || text.trim().length < 2) {
+    ttsChunkIndex++;
+    speakNextChunk();
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.rate = 1.0;
+
+  utterance.onend = () => {
+    ttsChunkIndex++;
+    speakNextChunk();
+  };
+
+  utterance.onerror = (e) => {
+    console.error('TTS Error (Chunk ' + ttsChunkIndex + '):', e);
+    // Try to continue
+    ttsChunkIndex++;
+    speakNextChunk();
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
 function toggleTTS() {
   if (!window.speechSynthesis) {
     alert("Text-to-Speech not supported on this device.");
     return;
   }
 
-  if (window.speechSynthesis.speaking || ttsSpeaking) {
+  if (ttsSpeaking) {
     stopTTS();
     return;
   }
@@ -1034,29 +1073,26 @@ function toggleTTS() {
   // Start Speaking
   if (!readContent) return;
   const text = readContent.innerText;
+
   if (!text || text.length < 10) {
     alert("No readable content found for this article.");
     return;
   }
 
-  currentUtterance = new SpeechSynthesisUtterance(text);
-  currentUtterance.lang = 'en-US';
-  currentUtterance.rate = 1.0;
-
-  currentUtterance.onend = () => {
-    ttsSpeaking = false;
-    updateListenButtonState();
-  };
-
-  currentUtterance.onerror = (e) => {
-    console.error('TTS Error:', e);
-    ttsSpeaking = false;
-    updateListenButtonState();
-  };
-
-  window.speechSynthesis.speak(currentUtterance);
+  // Chunking Logic: Split by sentence endings (. ! ?), keeping the punctuation
+  // Logic: Match any character that is not .?!, followed by .?!
+  ttsChunks = text.match(/[^.!?]+[.!?]+/g) || [text];
+  ttsChunkIndex = 0;
   ttsSpeaking = true;
   updateListenButtonState();
+
+  // Cancel any existing speech first
+  window.speechSynthesis.cancel();
+
+  // Small delay to allow cancel to take effect
+  setTimeout(() => {
+    speakNextChunk();
+  }, 50);
 }
 
 if (listenBtn) {
