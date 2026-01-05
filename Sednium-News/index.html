@@ -126,6 +126,34 @@
       </div>
 
       <div class="settings-section">
+        <h3>Our RSS Feeds</h3>
+        <p style="font-size: 0.8rem; color: var(--accent-color); margin-bottom: 0.5rem;">Use these links in your
+          favorite RSS reader:</p>
+        <div class="custom-rss-list" style="max-height: none; overflow: visible;">
+          <div class="custom-rss-item">
+            <span>Top News</span>
+            <small onclick="navigator.clipboard.writeText(window.location.origin + '/rss')"
+              style="cursor:pointer; color:var(--accent-color);">/rss</small>
+          </div>
+          <div class="custom-rss-item">
+            <span>Technology</span>
+            <small onclick="navigator.clipboard.writeText(window.location.origin + '/rss?category=technology')"
+              style="cursor:pointer; color:var(--accent-color);">/rss?category=technology</small>
+          </div>
+          <div class="custom-rss-item">
+            <span>Science</span>
+            <small onclick="navigator.clipboard.writeText(window.location.origin + '/rss?category=science')"
+              style="cursor:pointer; color:var(--accent-color);">/rss?category=science</small>
+          </div>
+          <div class="custom-rss-item">
+            <span>India</span>
+            <small onclick="navigator.clipboard.writeText(window.location.origin + '/rss?category=india')"
+              style="cursor:pointer; color:var(--accent-color);">/rss?category=india</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
         <h3>Feed Preferences</h3>
 
         <div class="option-row" style="margin-bottom: 1rem;">
