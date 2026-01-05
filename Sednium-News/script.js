@@ -1425,6 +1425,28 @@ function updateBookmarkButton(isActive) {
   }
 }
 
+/**
+ * Render Skeleton Loading Cards
+ */
+function renderSkeletons(count = 5) {
+  const newsContainer = document.getElementById('news-container');
+  if (!newsContainer) return;
+
+  newsContainer.innerHTML = ''; // Clear container
+
+  for (let i = 0; i < count; i++) {
+    const card = document.createElement('div');
+    card.className = 'skeleton-card';
+    card.innerHTML = `
+      <div class="skeleton-image"></div>
+      <div class="skeleton-text title"></div>
+      <div class="skeleton-text short"></div>
+      <div class="skeleton-text"></div>
+    `;
+    newsContainer.appendChild(card);
+  }
+}
+
 // Share functionality
 function shareArticle(article) {
   const shareData = {
