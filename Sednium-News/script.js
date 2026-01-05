@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Elements
   const settingsBtn = document.getElementById('settings-trigger');
-  const settingsModal = document.getElementById('settings-modal');
+  // const settingsModal = document.getElementById('settings-modal'); // Removed in v1.7
   const closeSettingsBtn = document.getElementById('close-settings');
   const themeButtons = document.querySelectorAll('.theme-group button');
   const fontButtons = document.querySelectorAll('.font-group button');
@@ -859,11 +859,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Close modals on outside click
+  // Close modals on outside click matches the new view ID
   document.addEventListener('click', (e) => {
-    // If settings modal is open, close it on outside click
-    if (!settingsModal.classList.contains('hidden') && !e.target.closest('#settings-modal') && !e.target.closest('#settings-trigger')) {
-      settingsModal.classList.add('hidden');
+    // If settings view is open... actually for full page view we usually don't close on "outside" click since it covers everything.
+    // The previous logic was for a modal. For a full page view (z-index 2000), there is no 'outside'.
+    // But if we want to keep it safe:
+    /* 
+    if (settingsView && settingsView.classList.contains('visible') && !settingsView.contains(e.target) && !e.target.closest('#settings-trigger')) {
+       closeSettings();
     }
+    */
+    // Since it's full screen, we rely on the BACK button. Removing the buggy modal logic.
   });
 
   const { mode, value } = getSearchParams();
