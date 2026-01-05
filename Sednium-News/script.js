@@ -628,6 +628,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }, 300);
       document.body.classList.remove('modal-open');
+
+      // Reset bottom nav active state
+      if (typeof updateBottomNav === 'function') {
+        if (isBookmarksView) {
+          updateBottomNav('nav-saved');
+        } else {
+          updateBottomNav('nav-home');
+        }
+      }
     }
   }
 
