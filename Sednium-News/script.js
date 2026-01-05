@@ -1463,8 +1463,7 @@ function renderSkeletons(count = 5) {
   }
 }
 
-  }
-}
+
 
 // Share functionality
 function shareArticle(article) {
