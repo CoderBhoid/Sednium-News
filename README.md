@@ -73,7 +73,7 @@ You can download the latest signed **APK** directly from our [Releases Page](htt
 ---
 
 ## © License
-Copyright 2025 **Sednium**.
+Copyright 2026 **Sednium**.
 Proudly Open Source.
 
 Made with ❤️ by **Bhoid**.
