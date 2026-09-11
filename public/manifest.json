@@ -1,0 +1,26 @@
+{
+    "name": "Sednium News",
+    "short_name": "Sednium",
+    "description": "Distraction-free news aggregator with industrial aesthetics and audio narration.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "categories": ["news", "magazines", "productivity"],
+    "icons": [
+        {
+            "src": "/assets/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

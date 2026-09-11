@@ -1,0 +1,23 @@
+# ai.txt - Permissions and Declarations for AI Crawlers and Agents
+# Standard: https://ai.txt / Spawning.ai
+# Site: https://news.sednium.com/
+
+User-Agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /rss
+Allow: /rss/*
+Allow: /api/news
+Allow: /api/rss
+
+# Prevent proxy abuse
+Disallow: /api/proxy*
+
+# Machine-Readable Context
+Site-Name: Sednium News
+Description: Distraction-free news aggregation, in-browser reader, and RSS feed generator.
+License: MIT
+Attribution: Sednium News (https://news.sednium.com/)
+Creator: Bhoid (https://bhoid.sednium.com)
+Contact: https://github.com/CoderBhoid/Sednium-News
+Documentation: https://news.sednium.com/llms.txt

@@ -1,0 +1,47 @@
+# Sednium News
+
+> Distraction-free web news aggregator and reader with an industrial editorial interface.
+
+Sednium News aggregates and normalizes articles across ten channels, extracts full-text articles via Mozilla Readability, provides in-browser speech audio playback, and serves public RSS 2.0 feeds without native device wrappers or tracking scripts. Built using Vite, TypeScript, Tailwind CSS, and Vercel serverless functions.
+
+## Primary Sections
+
+- [Headlines](https://news.sednium.com/?category=top): Top global breaking news
+- [Technology](https://news.sednium.com/?category=technology): Computing, software, hardware, and engineering
+- [World](https://news.sednium.com/?category=world): International reporting and dispatches
+- [Business](https://news.sednium.com/?category=business): Markets, finance, and commerce
+- [Politics](https://news.sednium.com/?category=politics): Policy, government, and global affairs
+- [Science](https://news.sednium.com/?category=science): Space, physics, and scientific research
+- [Health](https://news.sednium.com/?category=health): Public health, medicine, and wellness
+- [Entertainment](https://news.sednium.com/?category=entertainment): Culture, film, and media
+- [Sports](https://news.sednium.com/?category=sports): Global athletics and leagues
+- [India](https://news.sednium.com/?category=india): Regional Indian headlines
+
+## Public RSS Feeds
+
+- [Top Headlines RSS](https://news.sednium.com/rss): Recent headlines XML feed
+- [Technology RSS](https://news.sednium.com/rss/technology): Technology category XML feed
+- [World RSS](https://news.sednium.com/rss/world): World category XML feed
+- [Business RSS](https://news.sednium.com/rss/business): Business category XML feed
+- [Science RSS](https://news.sednium.com/rss/science): Science category XML feed
+- [India RSS](https://news.sednium.com/rss/india): India category XML feed
+
+## Serverless API Specifications
+
+- [/api/news](https://news.sednium.com/api/news): JSON endpoint aggregating feeds in parallel with 5-second per-feed timeouts. Query parameters: `category`, `q`, `custom_url`.
+- [/api/read](https://news.sednium.com/api/read): Serverless full-text reader extraction using JSDOM and Mozilla Readability. Query parameter: `url`.
+- [/api/rss](https://news.sednium.com/api/rss): Public RSS 2.0 generator with RFC-822 timestamps and media enclosures.
+
+## Architecture and Design
+
+- Client Architecture: Vite 8 + TypeScript 7 + Tailwind CSS 4 single page application.
+- Design Language: Industrial Editorial Minimal with dot-matrix NDot accents, Nothing Red `#D71921`, and OLED pure black contrast.
+- Privacy Model: Zero server databases, no analytics trackers, bookmarks saved locally in browser `localStorage`.
+- Progressive Web App: Service Worker shell caching with offline bookmark reading.
+
+## Creator and Organization
+
+- Author: Bhoid ([Portfolio](https://bhoid.sednium.com), [GitHub](https://github.com/CoderBhoid))
+- Organization: Sednium ([Website](https://sednium.com))
+- Source Code: [GitHub Repository](https://github.com/CoderBhoid/Sednium-News)
+- License: MIT License

@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /ai.txt
+Allow: /rss
+Allow: /rss/*
+Allow: /api/news
+Allow: /api/rss*
+Disallow: /api/proxy*
+
+Sitemap: https://news.sednium.com/sitemap.xml

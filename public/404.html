@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 - Signal Lost // Sednium News</title>
+  <meta name="robots" content="noindex, follow" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'ndot';
+      src: url('/Ndot-57.otf') format('opentype');
+      font-display: swap;
+    }
+    :root {
+      --bg: #000000;
+      --card: #0c0c0e;
+      --text: #ffffff;
+      --muted: #71717a;
+      --border: #1c1c1c;
+      --red: #D71921;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8f8f9;
+        --card: #ffffff;
+        --text: #18181b;
+        --muted: #71717a;
+        --border: #e4e4e7;
+      }
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Urbanist', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .brand-title {
+      font-family: 'ndot', 'Urbanist', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 32px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-title img {
+      width: 32px;
+      height: 32px;
+    }
+    .card {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 32px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+    }
+    .glitch-code {
+      font-family: 'ndot', 'Urbanist', sans-serif;
+      font-size: 4rem;
+      color: var(--red);
+      letter-spacing: 0.05em;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .status-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--red);
+      color: #ffffff;
+      padding: 12px 28px;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .action-btn:hover {
+      background-color: #b5141b;
+      transform: translateY(-2px);
+    }
+    .footer-links {
+      margin-top: 32px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: underline;
+      margin: 0 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="brand-title">
+    <img src="/assets/logo.png" alt="Sednium News Logo" />
+    <span>SEDNIUM NEWS</span>
+  </div>
+
+  <main class="card">
+    <div class="glitch-code">404</div>
+    <div class="status-tag">// SIGNAL LOST // ERROR_ROUTE_UNRESOLVED</div>
+    <h1>Headline Not Found</h1>
+    <p>The news dispatch, story, or category you are seeking does not exist or may have been archived.</p>
+    <a href="/" class="action-btn">Return to Headlines &rarr;</a>
+  </main>
+
+  <footer class="footer-links">
+    <a href="/?category=top">Top News</a> &bull;
+    <a href="/?category=technology">Technology</a> &bull;
+    <a href="/sitemap.xml">Sitemap</a>
+  </footer>
+</body>
+</html>

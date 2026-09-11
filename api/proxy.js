@@ -1,62 +1,64 @@
 /**
  * Article Proxy API for Sednium News (Vercel Serverless Function)
- * 
- * Fetches article HTML from source websites and returns it
- * This bypasses CORS issues since it runs server-side
- * 
- * Endpoint: /api/proxy?url=https://example.com/article
+ * Fetches raw HTML to bypass client-side CORS restrictions.
  */
 
 export default async function handler(req, res) {
-    // Enable CORS for the frontend
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
 
     const { url } = req.query;
 
     if (!url) {
-        return res.status(400).json({ error: 'URL parameter required' });
+        return res.status(400).json({ error: 'URL parameter is required' });
+    }
+
+    let targetUrl;
+    try {
+        targetUrl = decodeURIComponent(url);
+        const parsed = new URL(targetUrl);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return res.status(400).json({ error: 'Invalid URL protocol' });
+        }
+    } catch {
+        return res.status(400).json({ error: 'Invalid URL provided' });
     }
 
     try {
-        // Decode the URL
-        const targetUrl = decodeURIComponent(url);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
 
-        // Validate URL
+        let response;
         try {
-            new URL(targetUrl);
-        } catch {
-            return res.status(400).json({ error: 'Invalid URL' });
+            response = await fetch(targetUrl, {
+                signal: controller.signal,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                },
+                redirect: 'follow',
+            });
+        } finally {
+            clearTimeout(timeout);
         }
-
-        // Fetch the article with a browser-like user agent
-        const response = await fetch(targetUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1',
-            },
-            redirect: 'follow',
-        });
 
         if (!response.ok) {
             return res.status(response.status).json({
-                error: `Failed to fetch: ${response.status}`
+                error: `Failed to fetch: HTTP ${response.status}`
             });
         }
 
         const html = await response.text();
-
-        // Return the HTML content
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
-        res.status(200).send(html);
+        res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+        return res.status(200).send(html);
 
     } catch (error) {
-        console.error('Proxy error:', error);
-        res.status(500).json({ error: error.message });
+        console.error('Proxy error:', error.message);
+        return res.status(500).json({ error: error.message || 'Internal proxy error' });
     }
 }

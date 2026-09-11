@@ -1,39 +1,60 @@
 {
-    "version": 2,
-    "builds": [
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/rss/:category",
+      "destination": "/api/rss.js?category=:category"
+    },
+    {
+      "source": "/rss",
+      "destination": "/api/rss.js"
+    },
+    {
+      "source": "/api/:match*",
+      "destination": "/api/:match*.js"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
         {
-            "src": "api/**/*.js",
-            "use": "@vercel/node"
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
         },
         {
-            "src": "Sednium-News/**",
-            "use": "@vercel/static"
+          "key": "Content-Security-Policy",
+          "value": "upgrade-insecure-requests"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
         }
-    ],
-    "routes": [
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
         {
-            "src": "/api/proxy",
-            "dest": "/api/proxy.js"
-        },
-        {
-            "src": "/api/news",
-            "dest": "/api/news.js"
-        },
-        {
-            "src": "/api/read",
-            "dest": "/api/read.js"
-        },
-        {
-            "src": "/rss/(.*)",
-            "dest": "/api/rss.js?category=$1"
-        },
-        {
-            "src": "/rss",
-            "dest": "/api/rss.js"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/Sednium-News/$1"
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
-    ]
+      ]
+    }
+  ]
 }

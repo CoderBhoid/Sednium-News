@@ -1,27 +1,35 @@
 {
   "name": "sednium-news",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Modern web news aggregator and reader with an industrial editorial aesthetic",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "keywords": [
+    "news",
+    "rss",
+    "reader",
+    "pwa",
+    "editorial"
+  ],
+  "author": "Bhoid",
+  "license": "MIT",
   "dependencies": {
-    "@capacitor/android": "^7.4.4",
-    "@capacitor/cli": "^7.4.4",
-    "@capacitor/core": "^7.4.4",
-    "@capacitor/haptics": "^7.0.3",
-    "@capacitor/local-notifications": "^7.0.4",
-    "@capacitor/toast": "^7.0.3",
     "@mozilla/readability": "^0.6.0",
+    "dompurify": "^3.4.15",
     "jsdom": "^27.4.0",
+    "lucide": "^1.45.0",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
-    "@capacitor/assets": "^3.0.5"
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/dompurify": "^3.0.5",
+    "@types/node": "^22.20.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
   }
 }

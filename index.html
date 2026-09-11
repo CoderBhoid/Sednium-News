@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" class="dark font-sans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  
+  <!-- Primary Meta Tags -->
+  <title>Sednium News</title>
+  <meta name="title" content="Sednium News" />
+  <meta name="description" content="Read breaking headlines, technology dispatches, and world news distraction-free. Listen with in-browser audio or subscribe to custom RSS feeds." />
+  <meta name="keywords" content="news aggregator, tech dispatches, world news, distraction free reader, rss reader, speech synthesis news, sednium, bhoid" />
+  <meta name="author" content="Bhoid" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://news.sednium.com/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Sednium News" />
+  <meta property="og:url" content="https://news.sednium.com/" />
+  <meta property="og:title" content="Sednium News" />
+  <meta property="og:description" content="Read breaking headlines, technology dispatches, and world news distraction-free. In-browser audio reader with custom RSS feeds." />
+  <meta property="og:image" content="https://news.sednium.com/assets/logo.png" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://news.sednium.com/" />
+  <meta name="twitter:title" content="Sednium News" />
+  <meta name="twitter:description" content="Distraction-free news aggregation with industrial aesthetics, text-to-speech listening, and custom RSS subscriptions." />
+  <meta name="twitter:image" content="https://news.sednium.com/assets/logo.png" />
+  <meta name="twitter:creator" content="@CoderBhoid" />
+
+  <!-- Icons & PWA -->
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0c0c0e" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- RSS Autodiscovery Feeds -->
+  <link rel="alternate" type="application/rss+xml" title="Sednium News - Headlines" href="/rss" />
+  <link rel="alternate" type="application/rss+xml" title="Sednium News - Technology" href="/rss/technology" />
+  <link rel="alternate" type="application/rss+xml" title="Sednium News - World" href="/rss/world" />
+  <link rel="alternate" type="application/rss+xml" title="Sednium News - Science" href="/rss/science" />
+  <link rel="alternate" type="application/rss+xml" title="Sednium News - Business" href="/rss/business" />
+  <link rel="alternate" type="application/rss+xml" title="Sednium News - India" href="/rss/india" />
+
+  <!-- Preload Brand Font -->
+  <link rel="preload" href="/Ndot-57.otf" as="font" type="font/otf" crossorigin />
+
+  <!-- Editorial Typography Fallback & Urbanist Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Urbanist:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Structured Data: NewsMediaOrganization & WebSite SearchAction -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "NewsMediaOrganization",
+        "@id": "https://news.sednium.com/#organization",
+        "name": "Sednium News",
+        "url": "https://news.sednium.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://news.sednium.com/assets/logo.png",
+          "width": 512,
+          "height": 512
+        },
+        "founder": {
+          "@type": "Person",
+          "name": "Bhoid",
+          "url": "https://bhoid.sednium.com",
+          "sameAs": [
+            "https://github.com/CoderBhoid"
+          ]
+        },
+        "parentOrganization": {
+          "@type": "Organization",
+          "name": "Sednium",
+          "url": "https://sednium.com"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://news.sednium.com/#website",
+        "url": "https://news.sednium.com/",
+        "name": "Sednium News",
+        "description": "Distraction-free news aggregation and reader with industrial editorial aesthetics.",
+        "publisher": {
+          "@id": "https://news.sednium.com/#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://news.sednium.com/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="bg-main text-primary antialiased selection:bg-[#D71921] selection:text-white">
+  <div id="app" class="w-full min-h-screen"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
