@@ -41,16 +41,16 @@ export class Header {
         <!-- Top Bar: Brand, Search, Actions -->
         <div class="flex items-center justify-between gap-2 sm:gap-4">
           <!-- Brand & Clock -->
-          <div class="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0" id="brand-home">
+          <div class="flex items-center gap-1.5 sm:gap-3 cursor-pointer shrink-0" id="brand-home">
             <img src="${state.settings.theme === 'light' ? '/assets/logolight.png' : '/assets/logo.png'}" alt="Sednium" class="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-md" id="header-logo-img">
             <div class="flex flex-col">
-              <span class="font-brand text-base sm:text-2xl font-bold tracking-wider text-primary whitespace-nowrap">SEDNIUM NEWS</span>
+              <span class="font-brand text-sm sm:text-2xl font-bold tracking-wider text-primary whitespace-nowrap"><span class="max-[340px]:hidden">SEDNIUM NEWS</span><span class="min-[341px]:hidden">SEDNIUM</span></span>
               <span class="font-mono text-[10px] text-muted tracking-widest hidden sm:inline" id="live-clock">--:--:-- UTC</span>
             </div>
           </div>
 
           <!-- Search Bar (Full visibility with ample width and responsive padding) -->
-          <div class="flex-1 min-w-[120px] max-w-md mx-1.5 sm:mx-6">
+          <div class="flex-1 min-w-[70px] sm:min-w-[120px] max-w-md mx-1 sm:mx-6">
             <div class="relative flex items-center">
               <span class="absolute left-2.5 sm:left-3 text-muted pointer-events-none flex items-center">
                 <i data-lucide="search" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
@@ -103,8 +103,8 @@ export class Header {
           </div>
         </div>
 
-        <!-- Categories Scroll Strip (Centered on wider viewports) -->
-        <nav aria-label="News categories" class="mt-3 flex items-center justify-start sm:justify-center gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
+        <!-- Categories Scroll Strip (Left-aligned for natural scrolling, centered on ultra-wide viewports) -->
+        <nav aria-label="News categories" class="mt-3 flex items-center justify-start xl:justify-center gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
           ${CATEGORIES.map(cat => {
             const isActive = state.view === 'feed' && state.activeCategory === cat.key;
             return `
@@ -268,7 +268,7 @@ export class Header {
       const savedBtn = this.el.querySelector('#saved-header-btn');
       if (savedBtn) {
         const isSaved = state.view === 'saved';
-        savedBtn.className = `relative flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-subtle hover:border-strong text-xs font-mono tracking-wider transition-colors ${isSaved ? 'border-[#D71921] text-[#D71921] bg-[#D71921]/10' : 'text-primary'}`;
+        savedBtn.className = `hidden sm:flex btn-interactive cursor-pointer relative items-center gap-1.5 px-3 py-1.5 rounded-full border border-subtle hover:border-strong text-xs font-mono tracking-wider transition-colors ${isSaved ? 'border-[#D71921] text-[#D71921] bg-[#D71921]/10' : 'text-primary'}`;
         const countSpan = savedBtn.querySelector('span.rounded-full');
         if (state.bookmarks.length > 0) {
           if (countSpan) {
