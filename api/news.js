@@ -14,9 +14,15 @@ const RSS_FEEDS = {
         'https://techcrunch.com/feed/',
         'https://www.theverge.com/rss/index.xml',
         'https://www.wired.com/feed/rss',
-        'https://arstechnica.com/feed/',
+        'https://feeds.arstechnica.com/arstechnica/index',
         'https://www.engadget.com/rss.xml',
-        'https://news.ycombinator.com/rss'
+        'https://news.ycombinator.com/rss',
+        'https://9to5mac.com/feed/',
+        'https://www.androidauthority.com/feed/',
+        'https://www.tomshardware.com/feeds/all',
+        'https://www.bleepingcomputer.com/feed/',
+        'https://gizmodo.com/rss',
+        'https://slashdot.org/rss/slashdot.rss'
     ],
     world: [
         'https://feeds.bbci.co.uk/news/world/rss.xml',
@@ -94,7 +100,8 @@ async function fetchFeedWithTimeout(url, timeoutMs = 4000) {
         const response = await fetch(url, {
             signal: controller.signal,
             headers: {
-                'User-Agent': 'SedniumNewsBot/2.0 (+https://news.sednium.com; aggregator)',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Referer': 'https://www.google.com/',
                 'Accept': 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8'
             }
         });
@@ -169,6 +176,12 @@ function normalizeSourceName(rawSource, feedUrl = '') {
     if (combined.includes('arstechnica') || combined.includes('ars technica')) return 'Ars Technica';
     if (combined.includes('engadget')) return 'Engadget';
     if (combined.includes('ycombinator') || combined.includes('hacker news')) return 'Hacker News';
+    if (combined.includes('9to5mac')) return '9to5Mac';
+    if (combined.includes('androidauthority') || combined.includes('android authority')) return 'Android Authority';
+    if (combined.includes('tomshardware') || combined.includes("tom's hardware")) return "Tom's Hardware";
+    if (combined.includes('bleepingcomputer') || combined.includes('bleeping computer')) return 'BleepingComputer';
+    if (combined.includes('gizmodo')) return 'Gizmodo';
+    if (combined.includes('slashdot')) return 'Slashdot';
     if (combined.includes('politico')) return 'Politico';
     if (combined.includes('thehill') || combined.includes('the hill')) return 'The Hill';
     if (combined.includes('aljazeera') || combined.includes('al jazeera')) return 'Al Jazeera';

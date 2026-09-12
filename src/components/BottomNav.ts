@@ -8,7 +8,7 @@ export class BottomNav {
   constructor() {
     this.el = document.createElement('nav');
     this.el.id = 'bottom-nav';
-    this.el.className = 'sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-main/95 backdrop-blur-md border-t border-subtle px-3 py-2 flex items-center justify-around text-xs font-mono transition-colors duration-200';
+    this.el.className = 'sm:hidden fixed bottom-0 left-0 right-0 z-50 liquid-glass-nav px-3 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] flex items-center justify-around text-xs font-mono transition-colors duration-200';
     this.render();
     this.setupListeners();
     this.setupSubscription();
@@ -27,7 +27,7 @@ export class BottomNav {
     this.el.innerHTML = `
       <button
         id="nav-home-btn"
-        class="btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg transition-colors ${isFeed ? 'text-[#D71921] font-bold' : 'text-muted hover:text-primary'}"
+        class="btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${isFeed ? 'text-[#D71921] font-bold bg-[#D71921]/10' : 'text-muted hover:text-primary'}"
         aria-label="Feed"
       >
         <i data-lucide="newspaper" class="w-4 h-4"></i>
@@ -36,7 +36,7 @@ export class BottomNav {
 
       <button
         id="nav-reading-btn"
-        class="btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg transition-colors ${isReader ? 'text-[#D71921] font-bold' : 'text-muted hover:text-primary'}"
+        class="btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${isReader ? 'text-[#D71921] font-bold bg-[#D71921]/10' : 'text-muted hover:text-primary'}"
         aria-label="Reading"
       >
         <i data-lucide="book-open" class="w-4 h-4"></i>
@@ -45,17 +45,17 @@ export class BottomNav {
 
       <button
         id="nav-saved-btn"
-        class="btn-interactive cursor-pointer relative flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg transition-colors ${isSaved ? 'text-[#D71921] font-bold' : 'text-muted hover:text-primary'}"
+        class="btn-interactive cursor-pointer relative flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${isSaved ? 'text-[#D71921] font-bold bg-[#D71921]/10' : 'text-muted hover:text-primary'}"
         aria-label="Saved"
       >
         <i data-lucide="bookmark" class="w-4 h-4"></i>
         <span class="text-[10px] tracking-wider">SAVED</span>
-        <span id="nav-saved-dot" class="${state.bookmarks.length > 0 ? '' : 'hidden'} absolute top-0 right-1.5 w-2 h-2 rounded-full bg-[#D71921]"></span>
+        <span id="nav-saved-dot" class="${state.bookmarks.length > 0 ? '' : 'hidden'} absolute top-1 right-2.5 w-2 h-2 rounded-full bg-[#D71921]"></span>
       </button>
 
       <button
         id="nav-settings-btn"
-        class="btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg transition-colors ${this.isSettingsOpen ? 'text-[#D71921] font-bold' : 'text-muted hover:text-primary'}"
+        class="btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${this.isSettingsOpen ? 'text-[#D71921] font-bold bg-[#D71921]/10' : 'text-muted hover:text-primary'}"
         aria-label="Settings"
       >
         <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
@@ -129,22 +129,22 @@ export class BottomNav {
 
     const homeBtn = this.el.querySelector('#nav-home-btn');
     if (homeBtn) {
-      homeBtn.className = `btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg transition-colors ${isFeed ? 'text-[#D71921] font-bold' : 'text-muted hover:text-primary'}`;
+      homeBtn.className = `btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${isFeed ? 'text-[#D71921] font-bold bg-[#D71921]/10' : 'text-muted hover:text-primary'}`;
     }
 
     const readingBtn = this.el.querySelector('#nav-reading-btn');
     if (readingBtn) {
-      readingBtn.className = `btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg transition-colors ${isReader ? 'text-[#D71921] font-bold' : 'text-muted hover:text-primary'}`;
+      readingBtn.className = `btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${isReader ? 'text-[#D71921] font-bold bg-[#D71921]/10' : 'text-muted hover:text-primary'}`;
     }
 
     const savedBtn = this.el.querySelector('#nav-saved-btn');
     if (savedBtn) {
-      savedBtn.className = `btn-interactive cursor-pointer relative flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg transition-colors ${isSaved ? 'text-[#D71921] font-bold' : 'text-muted hover:text-primary'}`;
+      savedBtn.className = `btn-interactive cursor-pointer relative flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${isSaved ? 'text-[#D71921] font-bold bg-[#D71921]/10' : 'text-muted hover:text-primary'}`;
     }
 
     const settingsBtn = this.el.querySelector('#nav-settings-btn');
     if (settingsBtn) {
-      settingsBtn.className = `btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg transition-colors ${this.isSettingsOpen ? 'text-[#D71921] font-bold' : 'text-muted hover:text-primary'}`;
+      settingsBtn.className = `btn-interactive cursor-pointer flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${this.isSettingsOpen ? 'text-[#D71921] font-bold bg-[#D71921]/10' : 'text-muted hover:text-primary'}`;
     }
 
     const dot = this.el.querySelector('#nav-saved-dot');

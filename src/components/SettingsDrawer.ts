@@ -7,17 +7,18 @@ export class SettingsDrawer {
   private backdrop: HTMLElement;
   private panel: HTMLElement;
   private isOpen: boolean = false;
+  private closeTimeout: number | null = null;
 
   constructor() {
     this.el = document.createElement('div');
     this.el.id = 'settings-drawer-container';
-    this.el.className = 'fixed inset-0 z-40 pointer-events-none transition-opacity duration-300';
+    this.el.className = 'fixed inset-0 z-40 pointer-events-none invisible transition-opacity duration-300';
 
     this.backdrop = document.createElement('div');
-    this.backdrop.className = 'hidden sm:block absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300';
+    this.backdrop.className = 'absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300';
 
     this.panel = document.createElement('aside');
-    this.panel.className = 'fixed inset-0 bottom-14 sm:bottom-0 sm:left-auto sm:right-0 sm:top-0 sm:w-full sm:max-w-md bg-main sm:border-l border-subtle shadow-2xl flex flex-col pointer-events-none transform translate-y-full sm:translate-y-0 sm:translate-x-full transition-transform duration-300 overflow-hidden z-40';
+    this.panel.className = 'fixed inset-0 bottom-16 sm:bottom-0 sm:left-auto sm:right-0 sm:top-0 sm:w-full sm:max-w-md bg-main sm:border-l border-subtle shadow-2xl flex flex-col pointer-events-none transform translate-y-[120%] sm:translate-y-0 sm:translate-x-full transition-transform duration-300 overflow-hidden z-40 invisible';
     this.panel.setAttribute('role', 'dialog');
     this.panel.setAttribute('aria-label', 'Settings');
     this.panel.setAttribute('aria-modal', 'true');
@@ -35,11 +36,20 @@ export class SettingsDrawer {
   }
 
   open(): void {
+    if (this.closeTimeout) {
+      window.clearTimeout(this.closeTimeout);
+      this.closeTimeout = null;
+    }
     this.isOpen = true;
-    this.el.classList.remove('pointer-events-none');
+    this.el.classList.remove('pointer-events-none', 'invisible');
+    this.panel.classList.remove('invisible', 'pointer-events-none');
+
+    // Force layout reflow before triggering slide-in animation
+    void this.panel.offsetHeight;
+
     this.backdrop.classList.remove('pointer-events-none', 'opacity-0');
     this.backdrop.classList.add('opacity-100');
-    this.panel.classList.remove('pointer-events-none', 'translate-y-full', 'sm:translate-x-full');
+    this.panel.classList.remove('translate-y-[120%]', 'sm:translate-x-full');
     this.panel.classList.add('translate-y-0', 'sm:translate-x-0');
     document.body.style.overflow = 'hidden';
 
@@ -56,10 +66,18 @@ export class SettingsDrawer {
     this.backdrop.classList.remove('opacity-100');
     this.backdrop.classList.add('opacity-0', 'pointer-events-none');
     this.panel.classList.remove('translate-y-0', 'sm:translate-x-0');
-    this.panel.classList.add('translate-y-full', 'sm:translate-x-full', 'pointer-events-none');
+    this.panel.classList.add('translate-y-[120%]', 'sm:translate-x-full', 'pointer-events-none');
     this.el.classList.add('pointer-events-none');
     document.body.style.overflow = '';
     document.dispatchEvent(new CustomEvent('settings-state-change', { detail: { isOpen: false } }));
+
+    if (this.closeTimeout) window.clearTimeout(this.closeTimeout);
+    this.closeTimeout = window.setTimeout(() => {
+      if (!this.isOpen) {
+        this.el.classList.add('invisible');
+        this.panel.classList.add('invisible');
+      }
+    }, 320);
   }
 
   private render(): void {

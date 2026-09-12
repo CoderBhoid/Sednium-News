@@ -109,7 +109,7 @@ export class ReaderView {
         <div id="reading-progress-bar" class="h-0.5 bg-[#D71921] w-0 transition-all duration-150"></div>
         <div class="relative w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-2.5 flex items-center justify-between gap-2 sm:gap-4">
           <!-- Left: Brand Logo/Title with Live Clock FIRST, then Back Button -->
-          <div class="flex items-center gap-2 sm:gap-3">
+          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
             <!-- Brand Logo & Live Clock Requested by User FIRST (aligned to left) -->
             <div class="flex items-center gap-2 cursor-pointer" id="reader-brand-home" title="Return to Feed">
               <img src="${store.getState().settings.theme === 'light' ? '/assets/logolight.png' : '/assets/logo.png'}" alt="Sednium" class="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-md" id="reader-logo-img">
@@ -131,16 +131,28 @@ export class ReaderView {
             </button>
           </div>
 
-          <!-- Middle: Audio Player Controls (Dead Center on Screen) -->
-          <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 bg-card border border-subtle rounded-full px-3 py-1 shadow-xs z-10" role="region" aria-label="Audio Reader Controls">
+          <!-- Middle / Dropping Notch: Audio Player Controls -->
+          <!-- On Desktop: Centered audio pill. On Mobile / Android: Drops seamlessly from the top bar as an iPhone 10 notch -->
+          <div
+            id="tts-player-container"
+            class="reader-notch-container sm:absolute sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:mt-0 sm:bg-card sm:border sm:border-subtle sm:rounded-full sm:px-3 sm:py-1 sm:shadow-xs z-30"
+            role="region"
+            aria-label="Audio Reader Controls"
+          >
+            <!-- Left Concave Ear (mobile only iPhone 10 seamless fillet) -->
+            <svg class="sm:hidden absolute -left-[10px] top-0 w-[10px] h-[10px] pointer-events-none" viewBox="0 0 10 10" fill="none">
+              <path d="M0 0 C 5 0, 10 5, 10 10 L 10 0 Z" fill="var(--bg-main)" />
+              <path d="M0 0.5 C 5 0.5, 9.5 5, 9.5 10" stroke="var(--border-subtle)" stroke-width="1" fill="none" />
+            </svg>
+
             <button
               id="tts-play-btn"
               aria-label="Listen to Article"
               title="Listen to Article"
               class="btn-interactive cursor-pointer flex items-center gap-1 text-xs font-mono text-primary hover:text-[#D71921] transition-colors"
             >
-              <i data-lucide="volume-2" class="w-4 h-4"></i>
-              <span id="tts-label">LISTEN</span>
+              <i data-lucide="volume-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+              <span id="tts-label" class="tracking-wider">LISTEN</span>
             </button>
 
             <span class="text-subtle text-xs" aria-hidden="true">|</span>
@@ -162,10 +174,16 @@ export class ReaderView {
             >
               <i data-lucide="square" class="w-3 h-3"></i>
             </button>
+
+            <!-- Right Concave Ear (mobile only iPhone 10 seamless fillet) -->
+            <svg class="sm:hidden absolute -right-[10px] top-0 w-[10px] h-[10px] pointer-events-none" viewBox="0 0 10 10" fill="none">
+              <path d="M10 0 C 5 0, 0 5, 0 10 L 0 0 Z" fill="var(--bg-main)" />
+              <path d="M10 0.5 C 5 0.5, 0.5 5, 0.5 10" stroke="var(--border-subtle)" stroke-width="1" fill="none" />
+            </svg>
           </div>
 
           <!-- Right: Theme Toggle, Bookmark, Share & Source Link -->
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-1.5 shrink-0">
             <button
               id="reader-theme-toggle-btn"
               aria-label="${store.getState().settings.theme === 'light' ? 'Switch to OLED Dark Mode' : 'Switch to Light Mode'}"
@@ -207,8 +225,8 @@ export class ReaderView {
         </div>
       </div>
 
-      <!-- Article Main Container (pb-32 so bottom navbar never covers content) -->
-      <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 pb-32 sm:pb-24">
+      <!-- Article Main Container (pt-14 on mobile so dropping notch has clear breathing room; pb-32 for bottom nav) -->
+      <article class="max-w-3xl mx-auto px-4 sm:px-6 pt-14 pb-32 sm:py-10 sm:pb-24">
         <!-- Metadata Header -->
         <div class="mb-8 border-b border-subtle pb-8">
           <div class="flex items-center gap-3 mb-4">
@@ -894,15 +912,15 @@ export class ReaderView {
 
       if (isPlaying && !isPaused) {
         if (label) label.textContent = 'PAUSE';
-        if (playBtn) playBtn.innerHTML = `<i data-lucide="pause" class="w-4 h-4 text-[#D71921]"></i><span id="tts-label">PAUSE</span>`;
+        if (playBtn) playBtn.innerHTML = `<i data-lucide="pause" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D71921]"></i><span id="tts-label" class="tracking-wider">PAUSE</span>`;
         if (stopBtn) stopBtn.classList.remove('hidden');
       } else if (isPaused) {
         if (label) label.textContent = 'RESUME';
-        if (playBtn) playBtn.innerHTML = `<i data-lucide="play" class="w-4 h-4"></i><span id="tts-label">RESUME</span>`;
+        if (playBtn) playBtn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i><span id="tts-label" class="tracking-wider">RESUME</span>`;
         if (stopBtn) stopBtn.classList.remove('hidden');
       } else {
         if (label) label.textContent = 'LISTEN';
-        if (playBtn) playBtn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i><span id="tts-label">LISTEN</span>`;
+        if (playBtn) playBtn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i><span id="tts-label" class="tracking-wider">LISTEN</span>`;
         if (stopBtn) stopBtn.classList.add('hidden');
       }
 

@@ -128,6 +128,106 @@ function cleanArticleDom(rootElement) {
     }
 }
 
+/**
+ * Convert clean markdown into semantic HTML paragraphs, headings, blockquotes, and figures
+ */
+function markdownToHtml(md) {
+    if (!md) return '';
+    const lines = md.split(/\r?\n/);
+    const html = [];
+    let currentParagraph = [];
+
+    const flushParagraph = () => {
+        if (currentParagraph.length > 0) {
+            let text = currentParagraph.join(' ').trim();
+            if (text) {
+                // Images: ![alt](url)
+                text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<figure><img src="$2" alt="$1" /><figcaption>$1</figcaption></figure>');
+                // Links: [text](url)
+                text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+                // Bold and italics
+                text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+                html.push(`<p>${text}</p>`);
+            }
+            currentParagraph = [];
+        }
+    };
+
+    for (let line of lines) {
+        line = line.trim();
+        if (!line) {
+            flushParagraph();
+            continue;
+        }
+
+        if (line.startsWith('#')) {
+            flushParagraph();
+            const level = Math.min(3, line.match(/^#+/)[0].length);
+            const title = line.replace(/^#+\s*/, '');
+            html.push(`<h${level}>${title}</h${level}>`);
+        } else if (line.startsWith('>')) {
+            flushParagraph();
+            const quote = line.replace(/^>\s*/, '');
+            html.push(`<blockquote>${quote}</blockquote>`);
+        } else {
+            currentParagraph.push(line);
+        }
+    }
+    flushParagraph();
+    return html.join('\n');
+}
+
+/**
+ * Robust secondary extraction engine via reader proxy for WAF / Cloudflare / paywall-protected sites
+ */
+async function fetchFromReaderProxy(targetUrl, timeoutMs = 6500) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const proxyEndpoint = `https://r.jina.ai/${targetUrl}`;
+        const res = await fetch(proxyEndpoint, {
+            signal: controller.signal,
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!res.ok) return null;
+        const json = await res.json();
+        const data = json?.data;
+        if (!data || !data.content || data.content.trim().length < 120) return null;
+
+        const html = markdownToHtml(data.content);
+        const text = data.content.replace(/[#*>\\[\\]!]/g, '').replace(/\s+/g, ' ').trim();
+        const wordCount = text.split(/\s+/).filter(Boolean).length;
+        const readingTimeMin = Math.max(1, Math.ceil(wordCount / 200));
+
+        let site = 'Source';
+        try {
+            site = new URL(targetUrl).hostname.replace(/^www\./, '');
+        } catch {
+            // ignore
+        }
+
+        return {
+            status: 'success',
+            title: data.title || '',
+            byline: data.author || '',
+            excerpt: data.description || '',
+            content: html,
+            textContent: text,
+            original_url: targetUrl,
+            siteName: site,
+            wordCount,
+            readingTimeMin
+        };
+    } catch {
+        return null;
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -161,6 +261,19 @@ export default async function handler(req, res) {
         return res.status(200).json(cached.data);
     }
 
+    // Helper to store in cache and respond
+    const cacheAndRespond = (payload) => {
+        if (articleCache.size >= MAX_CACHE_SIZE) {
+            const oldest = articleCache.keys().next().value;
+            if (oldest) articleCache.delete(oldest);
+        }
+        articleCache.set(targetUrl, { data: payload, timestamp: Date.now() });
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
+        return res.status(200).json(payload);
+    };
+
     try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 6500);
@@ -174,12 +287,13 @@ export default async function handler(req, res) {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
                     'Accept-Language': 'en-US,en;q=0.9',
+                    'Referer': 'https://www.google.com/',
                     'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
                     'Sec-Ch-Ua-Mobile': '?0',
                     'Sec-Ch-Ua-Platform': '"Windows"',
                     'Sec-Fetch-Dest': 'document',
                     'Sec-Fetch-Mode': 'navigate',
-                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-Site': 'cross-site',
                     'Sec-Fetch-User': '?1',
                     'Upgrade-Insecure-Requests': '1'
                 }
@@ -188,8 +302,15 @@ export default async function handler(req, res) {
             clearTimeout(timeout);
         }
 
-        if (!response.ok) {
-            // Publisher returned non-200 (e.g. 403 Forbidden or 401 Paywall)
+        // If direct fetch is challenged by WAF (e.g. AWS WAF 202 on Ars Technica, or 403 on Cloudflare)
+        if (!response.ok || response.status === 202) {
+            // Attempt proxy reader extraction
+            const proxyArticle = await fetchFromReaderProxy(targetUrl);
+            if (proxyArticle) {
+                return cacheAndRespond(proxyArticle);
+            }
+
+            // Fallback response if all tiers exhausted
             return res.status(200).json({
                 status: 'fallback',
                 isProtected: true,
@@ -200,6 +321,14 @@ export default async function handler(req, res) {
         }
 
         const rawHtml = await response.text();
+
+        // Check if returned page is an anti-bot challenge interstitial (e.g. Cloudflare or AWS WAF)
+        if (rawHtml.length < 2500 && (rawHtml.includes('cf-browser-verification') || rawHtml.includes('Just a moment...') || rawHtml.includes('x-amzn-waf-action') || rawHtml.includes('Challenge Validation'))) {
+            const proxyArticle = await fetchFromReaderProxy(targetUrl);
+            if (proxyArticle) {
+                return cacheAndRespond(proxyArticle);
+            }
+        }
 
         // Strip scripts, styles, SVG, comments, noscript, iframes, audio, video before DOM construction for blazing-fast parsing
         const cleanedHtml = rawHtml
@@ -219,19 +348,6 @@ export default async function handler(req, res) {
 
         const dom = new JSDOM(cleanedHtml, { url: targetUrl, virtualConsole });
         const doc = dom.window.document;
-
-        // Helper to store in cache
-        const cacheAndRespond = (payload) => {
-            if (articleCache.size >= MAX_CACHE_SIZE) {
-                const oldest = articleCache.keys().next().value;
-                if (oldest) articleCache.delete(oldest);
-            }
-            articleCache.set(targetUrl, { data: payload, timestamp: Date.now() });
-
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
-            return res.status(200).json(payload);
-        };
 
         // Pre-clean doc body to strip ad frames and noise before Readability analysis
         cleanArticleDom(doc.body);
@@ -342,7 +458,12 @@ export default async function handler(req, res) {
             });
         }
 
-        // 3. Fallback response when extraction yield is low
+        // 3. Fallback extraction: try reader proxy if direct DOM extraction yield is low
+        const proxyArticle = await fetchFromReaderProxy(targetUrl);
+        if (proxyArticle) {
+            return cacheAndRespond(proxyArticle);
+        }
+
         return res.status(200).json({
             status: 'fallback',
             isProtected: false,

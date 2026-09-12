@@ -93,6 +93,7 @@ export function renderLucideIcons(): void {
 (window as any).lucide = {
   createIcons: renderLucideIcons
 };
+(window as any).store = store;
 
 // Main application orchestrator
 class App {
